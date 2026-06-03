@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.png" width="180" alt="Techo para Chile" />
+  <img src="assets/logo.png" width="300" alt="Techo para Chile" />
 </p>
 
 <h1 align="center">Techos Para Chile — Backend</h1>
