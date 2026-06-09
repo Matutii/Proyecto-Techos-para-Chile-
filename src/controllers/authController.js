@@ -12,7 +12,7 @@ async function login(req, res, next) {
 //get /api/auth/perfil, va a necesitar un token valido
 async function perfil(req, res, next){
     try{
-        const usuario= await auth.service.obetenerPerfil(req.usuario.id);
+        const usuario= await auth.service.obtenerPerfil(req.usuario.id);
         res.json(usuario);
     } catch (error) {
         next(error);
