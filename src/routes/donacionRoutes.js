@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { validationResult } = require('express-validator');
-const verificarToken = require('../middlewares/auth.mjs').default;
+const verificarToken = require('../middlewares/auth');
 const { soloAccesoBodega } = require('../middlewares/roles');
 const ctrl = require('../controllers/donacionController');
 const v = require('../validations/donacionValidations');

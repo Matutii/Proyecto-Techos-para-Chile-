@@ -1,5 +1,5 @@
-import jwt from 'jsonwebtoken';
-import { AppDataSource } from '../config/configDb.mjs';
+const jwt = require('jsonwebtoken');
+const { AppDataSource } = require('../config/configDb.mjs');
 
 async function verificarToken(req, res, next) {
   const header = req.headers.authorization;
@@ -29,4 +29,4 @@ async function verificarToken(req, res, next) {
   }
 }
 
-export default verificarToken;
+module.exports = verificarToken;
