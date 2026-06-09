@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { validationResult } = require('express-validator');
-const verificarToken = require('../middlewares/auth');
+const verificarToken = require('../middlewares/auth.mjs').default;
 const ctrl = require('../controllers/voluntarioController');
 const v = require('../validations/voluntarioValidations');
 
