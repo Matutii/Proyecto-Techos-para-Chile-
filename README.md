@@ -124,6 +124,19 @@ El seed crea automáticamente estos usuarios al iniciar la app:
 | POST | `/` | ❌ | Registrar una donación |
 | GET | `/` | ✅ | Listar donaciones (admin/coordinador) |
 
+### Cuadrillas — `/api/cuadrillas`
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| GET | `/` | ✅ | Listar cuadrillas |
+| GET | `/:id` | ✅ | Obtener cuadrilla + integrantes |
+| POST | `/` | ✅ | Crear cuadrilla (admin/coordinador) |
+| PUT | `/:id` | ✅ | Actualizar cuadrilla |
+| DELETE | `/:id` | ✅ | Eliminar cuadrilla (solo admin) |
+| POST | `/:id/voluntarios` | ✅ | Agregar voluntario a cuadrilla |
+
+---
+
 ### Health
 
 | Método | Ruta | Descripción |
