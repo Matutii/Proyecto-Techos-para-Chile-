@@ -2,6 +2,7 @@ const { AppDataSource } = require('../config/configDb.mjs');
 
 const voluntarioRepo = () => AppDataSource.getRepository('Voluntario');
 
+// Clasifica la especialidad del voluntario según experiencia y habilidades
 function clasificarEspecialidad(experienciaAnos, habilidades) {
   const texto = (habilidades || '').toLowerCase();
   const tieneKeywordTecnica = /(electric|gasfit|carpint|tecnic|plomer|albañil|maestr)/.test(texto);
@@ -11,6 +12,7 @@ function clasificarEspecialidad(experienciaAnos, habilidades) {
   return 'fuerza_general';
 }
 
+// Inscribe un nuevo voluntario, validando email único y asignando especialidad
 async function inscribirVoluntario(datos) {
   const existente = await voluntarioRepo().findOne({
     where: { email: datos.email },
@@ -42,6 +44,7 @@ async function inscribirVoluntario(datos) {
   return voluntario;
 }
 
+// Lista voluntarios con filtros opcionales por estado o especialidad
 async function listarVoluntarios(filtros = {}) {
   const where = {};
 
@@ -54,6 +57,7 @@ async function listarVoluntarios(filtros = {}) {
   });
 }
 
+// Obtiene un voluntario por ID
 async function obtenerVoluntario(id) {
   const voluntario = await voluntarioRepo().findOne({
     where: { id: Number(id) },

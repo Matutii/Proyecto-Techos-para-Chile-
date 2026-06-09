@@ -3,6 +3,7 @@ const { AppDataSource } = require('../config/configDb.mjs');
 const materialRepo = () => AppDataSource.getRepository('Material');
 const historialRepo = () => AppDataSource.getRepository('HistorialStock');
 
+// Lista todos los materiales con filtros opcionales por estado o proyecto
 async function listarMateriales(filtros = {}) {
   const where = {};
 
@@ -16,6 +17,7 @@ async function listarMateriales(filtros = {}) {
   });
 }
 
+// Obtiene un material por ID incluyendo su historial de cambios de estado
 async function obtenerMaterial(id) {
   const material = await materialRepo().findOne({
     where: { id: Number(id) },
@@ -35,6 +37,7 @@ async function obtenerMaterial(id) {
   return { ...material, historialStock: historial };
 }
 
+// Crea un material y registra su estado inicial en el historial
 async function crearMaterial(datos, usuarioId) {
   const estadoFinal = datos.estado || 'Disponible';
 
@@ -56,6 +59,7 @@ async function crearMaterial(datos, usuarioId) {
   return material;
 }
 
+// Actualiza el estado de un material y registra el cambio en el historial
 async function actualizarEstado(id, estado, observacion, usuarioId) {
   const actual = await materialRepo().findOne({ where: { id: Number(id) } });
 
