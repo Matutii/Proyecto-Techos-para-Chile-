@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {validationResult}= require('express-validator');
-const verificarToken= require('../middlewares/verificarToken');
+const verificarToken= require('../auth.mjs/verificarToken');
 const ctrl= require('../controllers/authController');
 const v = require('../validations/authValidations');
 //middleware va a reutilizar para hacer un reporte de errores de validacion
