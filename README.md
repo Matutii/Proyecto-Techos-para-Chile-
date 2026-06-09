@@ -12,7 +12,7 @@
 
 ## Descripción
 
-Backend REST API para **Techos Para Chile**, organización que coordina cuadrillas de voluntarios en proyectos de construcción social. El sistema centraliza la gestión de stock de materiales, inscripción y clasificación de voluntarios, autenticación por roles y registro de donaciones.
+Sistema de gestión operacional para **Techos Para Chile**, organización que coordina cuadrillas de voluntarios en proyectos de construcción social. Actualmente en desarrollo, centraliza la gestión de stock de materiales, inscripción de voluntarios, autenticación por roles, registro de donaciones y asignación de cuadrillas.
 
 ---
 
