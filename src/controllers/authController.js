@@ -1,5 +1,6 @@
-const authService = require('../services/auth.service');//post /api/auth/login
-//body: {email, password}
+const authService = require('../services/auth.service');
+
+// POST /api/auth/login - Inicia sesión y devuelve token
 async function login(req, res, next) {
     try {
         const {email, password} = req.body;
@@ -9,7 +10,7 @@ async function login(req, res, next) {
         next(error);
     }
 }
-//get /api/auth/perfil, va a necesitar un token valido
+// GET /api/auth/perfil - Retorna perfil del usuario autenticado
 async function perfil(req, res, next){
     try{
         const usuario= await authService.obtenerPerfil(req.usuario.id);

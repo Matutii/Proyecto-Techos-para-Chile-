@@ -16,7 +16,7 @@ async function login(email, password) {
 
   const usuario = await usuarioRepo().findOne({ where: { email } });
 
-  // Mismo mensaje para email inexistente o contraseña incorrecta
+  // Mismo mensaje para email inexistente o contraseña incorrecta por seguridad
   if (!usuario) {
     throw Object.assign(new Error('Credenciales inválidas'), { status: 401 });
   }
@@ -52,7 +52,7 @@ async function login(email, password) {
     },
   };
 }
-//Retorna el perfil del usuario autenticado.
+// Retorna el perfil del usuario autenticado
 /**
  * @param {number} id
  * @returns {Promise<object>}
@@ -74,7 +74,7 @@ async function obtenerPerfil(id) {
     permisos:  resolverPermisos(usuario.rol),
   };
 }
-//Devuelve las capacidades del rol para que el frontend filtre el menu
+// Devuelve los permisos según el rol del usuario
 /**
  * @param {'admin'|'colaborador'|'coordinador_logistica'} rol
  * @returns {object}

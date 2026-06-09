@@ -3,6 +3,7 @@ const { AppDataSource } = require('../config/configDb.mjs');
 const cuadrillaRepo = () => AppDataSource.getRepository('Cuadrilla');
 const cvRepo = () => AppDataSource.getRepository('CuadrillaVoluntario');
 
+// Lista cuadrillas con filtros opcionales por estado o especialidad
 async function listarCuadrillas(filtros = {}) {
   const where = {};
 
@@ -16,6 +17,7 @@ async function listarCuadrillas(filtros = {}) {
   });
 }
 
+// Obtiene una cuadrilla por ID incluyendo sus integrantes
 async function obtenerCuadrilla(id) {
   const cuadrilla = await cuadrillaRepo().findOne({
     where: { id: Number(id) },
@@ -29,6 +31,7 @@ async function obtenerCuadrilla(id) {
   return cuadrilla;
 }
 
+// Crea una nueva cuadrilla validando nombre único
 async function crearCuadrilla(datos) {
   const existente = await cuadrillaRepo().findOne({
     where: { nombre: datos.nombre },
@@ -49,6 +52,7 @@ async function crearCuadrilla(datos) {
   return cuadrilla;
 }
 
+// Actualiza los datos de una cuadrilla existente
 async function actualizarCuadrilla(id, datos) {
   const cuadrilla = await cuadrillaRepo().findOne({
     where: { id: Number(id) },
@@ -82,6 +86,7 @@ async function actualizarCuadrilla(id, datos) {
   });
 }
 
+// Elimina una cuadrilla por ID
 async function eliminarCuadrilla(id) {
   const cuadrilla = await cuadrillaRepo().findOne({
     where: { id: Number(id) },
@@ -94,6 +99,7 @@ async function eliminarCuadrilla(id) {
   await cuadrillaRepo().remove(cuadrilla);
 }
 
+// Asigna un voluntario a una cuadrilla
 async function agregarVoluntario(cuadrillaId, voluntarioId) {
   const cuadrilla = await cuadrillaRepo().findOne({
     where: { id: Number(cuadrillaId) },

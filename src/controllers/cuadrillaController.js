@@ -1,5 +1,6 @@
 const svc = require('../services/cuadrilla.service');
 
+// GET /api/cuadrillas - Lista todas las cuadrillas
 async function listarCuadrillas(req, res, next) {
   try {
     const filtros = {};
@@ -13,6 +14,7 @@ async function listarCuadrillas(req, res, next) {
   }
 }
 
+// GET /api/cuadrillas/:id - Obtiene una cuadrilla por ID
 async function obtenerCuadrilla(req, res, next) {
   try {
     const cuadrilla = await svc.obtenerCuadrilla(req.params.id);
@@ -25,6 +27,7 @@ async function obtenerCuadrilla(req, res, next) {
   }
 }
 
+// POST /api/cuadrillas - Crea una nueva cuadrilla
 async function crearCuadrilla(req, res, next) {
   try {
     const cuadrilla = await svc.crearCuadrilla(req.body);
@@ -37,6 +40,7 @@ async function crearCuadrilla(req, res, next) {
   }
 }
 
+// PUT /api/cuadrillas/:id - Actualiza una cuadrilla existente
 async function actualizarCuadrilla(req, res, next) {
   try {
     const cuadrilla = await svc.actualizarCuadrilla(req.params.id, req.body);
@@ -52,6 +56,7 @@ async function actualizarCuadrilla(req, res, next) {
   }
 }
 
+// DELETE /api/cuadrillas/:id - Elimina una cuadrilla
 async function eliminarCuadrilla(req, res, next) {
   try {
     await svc.eliminarCuadrilla(req.params.id);
@@ -64,6 +69,7 @@ async function eliminarCuadrilla(req, res, next) {
   }
 }
 
+// POST /api/cuadrillas/:id/voluntarios - Agrega un voluntario a la cuadrilla
 async function agregarVoluntario(req, res, next) {
   try {
     const asignacion = await svc.agregarVoluntario(req.params.id, req.body.voluntarioId);

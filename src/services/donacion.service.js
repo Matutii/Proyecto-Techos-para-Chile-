@@ -2,11 +2,7 @@ const { AppDataSource } = require('../config/configDb.mjs');
 
 const donacionRepo = () => AppDataSource.getRepository('Donacion');
 
-/**
- * Crea una nueva donación con estado 'pendiente'.
- * @param {object} datos - { donanteNombre?, donanteEmail?, monto, metodoPago?, usuarioId? }
- * @returns {Promise<object>} La donación creada
- */
+// Crea una nueva donación con estado 'pendiente'
 async function crearDonacion(datos) {
   if (!datos.monto || Number(datos.monto) <= 0) {
     throw Object.assign(new Error('El monto debe ser mayor a 0'), { status: 400 });
@@ -24,11 +20,7 @@ async function crearDonacion(datos) {
   return donacion;
 }
 
-/**
- * Lista donaciones con filtros opcionales.
- * @param {object} filtros - { estado?, metodoPago? }
- * @returns {Promise<Array>}
- */
+// Lista donaciones con filtros opcionales por estado o método de pago
 async function listarDonaciones(filtros = {}) {
   const where = {};
 
@@ -42,10 +34,7 @@ async function listarDonaciones(filtros = {}) {
   });
 }
 
-/**
- * Retorna la lista estática de métodos de pago disponibles.
- * @returns {Promise<Array>}
- */
+// Retorna la lista estática de métodos de pago disponibles
 async function obtenerInfoMetodosPago() {
   return [
     { id: 'transferencia', nombre: 'Transferencia bancaria' },
