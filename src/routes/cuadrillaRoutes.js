@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { validationResult } = require('express-validator');
-const verificarToken = require('../middlewares/auth.mjs').default;
+const verificarToken = require('../middlewares/auth');
 const { soloAdmin, requiereRol } = require('../middlewares/roles');
 const ctrl = require('../controllers/cuadrillaController');
 const v = require('../validations/cuadrillaValidations');
