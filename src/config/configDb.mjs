@@ -6,6 +6,8 @@ import { Material } from '../entities/material.entity.mjs';
 import { HistorialStock } from '../entities/historialStock.entity.mjs';
 import { Voluntario } from '../entities/voluntario.entity.mjs';
 import { Donacion } from '../entities/donacion.entity.mjs';
+import { Cuadrilla } from '../entities/cuadrilla.entity.mjs';
+import { CuadrillaVoluntario } from '../entities/cuadrillaVoluntario.entity.mjs';
 
 export const AppDataSource = new DataSource({
     type: 'postgres',
@@ -16,7 +18,7 @@ export const AppDataSource = new DataSource({
     database: DATABASE,
     synchronize: true,
     logging: false,
-    entities: [Usuario, Proyecto, Material, HistorialStock, Voluntario, Donacion],
+    entities: [Usuario, Proyecto, Material, HistorialStock, Voluntario, Donacion, Cuadrilla, CuadrillaVoluntario],
 });
 
 export async function connectDb() {
