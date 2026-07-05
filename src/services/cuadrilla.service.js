@@ -3,6 +3,24 @@ const { AppDataSource } = require('../config/configDb.mjs');
 const cuadrillaRepo = () => AppDataSource.getRepository('Cuadrilla');
 const cvRepo = () => AppDataSource.getRepository('CuadrillaVoluntario');
 
+function errorConflicto(mensaje) {
+  const err = new Error(mensaje);
+  err.status = 409;
+  return err;
+}
+
+function errorNoEncontrado(mensaje) {
+  const err = new Error(mensaje);
+  err.status = 404;
+  return err;
+}
+
+function errorSolicitudInvalida(mensaje) {
+  const err = new Error(mensaje);
+  err.status = 400;
+  return err;
+}
+
 // Lista cuadrillas con filtros opcionales por estado o especialidad
 async function listarCuadrillas(filtros = {}) {
   const where = {};
@@ -25,7 +43,7 @@ async function obtenerCuadrilla(id) {
   });
 
   if (!cuadrilla) {
-    throw new Error('Cuadrilla no encontrada');
+    throw errorNoEncontrado('Cuadrilla no encontrada');
   }
 
   return cuadrilla;
@@ -38,7 +56,7 @@ async function crearCuadrilla(datos) {
   });
 
   if (existente) {
-    throw new Error('Ya existe una cuadrilla con ese nombre');
+    throw errorConflicto('Ya existe una cuadrilla con ese nombre');
   }
 
   const cuadrilla = await cuadrillaRepo().save({
@@ -59,7 +77,7 @@ async function actualizarCuadrilla(id, datos) {
   });
 
   if (!cuadrilla) {
-    throw new Error('Cuadrilla no encontrada');
+    throw errorNoEncontrado('Cuadrilla no encontrada');
   }
 
   if (datos.nombre && datos.nombre !== cuadrilla.nombre) {
@@ -68,7 +86,7 @@ async function actualizarCuadrilla(id, datos) {
     });
 
     if (existente) {
-      throw new Error('Ya existe una cuadrilla con ese nombre');
+      throw errorConflicto('Ya existe una cuadrilla con ese nombre');
     }
   }
 
@@ -93,7 +111,7 @@ async function eliminarCuadrilla(id) {
   });
 
   if (!cuadrilla) {
-    throw new Error('Cuadrilla no encontrada');
+    throw errorNoEncontrado('Cuadrilla no encontrada');
   }
 
   await cuadrillaRepo().remove(cuadrilla);
@@ -106,11 +124,11 @@ async function agregarVoluntario(cuadrillaId, voluntarioId) {
   });
 
   if (!cuadrilla) {
-    throw new Error('Cuadrilla no encontrada');
+    throw errorNoEncontrado('Cuadrilla no encontrada');
   }
 
   if (cuadrilla.estado === 'Disuelta') {
-    throw new Error('No se pueden agregar voluntarios a una cuadrilla disuelta');
+    throw errorSolicitudInvalida('No se pueden agregar voluntarios a una cuadrilla disuelta');
   }
 
   const existente = await cvRepo().findOne({
@@ -122,7 +140,7 @@ async function agregarVoluntario(cuadrillaId, voluntarioId) {
   });
 
   if (existente) {
-    throw new Error('El voluntario ya está asignado a esta cuadrilla');
+    throw errorConflicto('El voluntario ya está asignado a esta cuadrilla');
   }
 
   const asignacion = await cvRepo().save({

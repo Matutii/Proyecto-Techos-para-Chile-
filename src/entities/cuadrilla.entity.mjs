@@ -59,6 +59,11 @@ export const Cuadrilla = new EntitySchema({
             joinColumn: { name: "proyecto_id" },
             onDelete: "SET NULL",
         },
+        voluntarios: {
+            type: "one-to-many",
+            target: "CuadrillaVoluntario",
+            inverseSide: "cuadrilla",
+        },
     },
     indices: [
         {
