@@ -56,6 +56,7 @@ async function obtenerMaterial(id) {
   const historial = await historialRepo().find({
     where: { materialId: material.id },
     relations: ['usuario'],
+    select: { usuario: { id: true, nombre: true } },
     order: { registradoEn: 'DESC' },
   });
 

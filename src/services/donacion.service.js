@@ -31,6 +31,7 @@ async function listarDonaciones(filtros = {}) {
     where,
     order: { creadoEn: 'DESC' },
     relations: ['usuario'],
+    select: { usuario: { id: true, nombre: true } },
   });
 }
 
