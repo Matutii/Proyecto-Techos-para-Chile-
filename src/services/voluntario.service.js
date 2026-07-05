@@ -2,6 +2,18 @@ const { AppDataSource } = require('../config/configDb.mjs');
 
 const voluntarioRepo = () => AppDataSource.getRepository('Voluntario');
 
+function errorConflicto(mensaje) {
+  const err = new Error(mensaje);
+  err.status = 409;
+  return err;
+}
+
+function errorNoEncontrado(mensaje) {
+  const err = new Error(mensaje);
+  err.status = 404;
+  return err;
+}
+
 // Clasifica la especialidad del voluntario según experiencia y habilidades
 function clasificarEspecialidad(experienciaAnos, habilidades) {
   const texto = (habilidades || '').toLowerCase();
@@ -19,7 +31,7 @@ async function inscribirVoluntario(datos) {
   });
 
   if (existente) {
-    throw new Error('Ya existe un voluntario registrado con ese email');
+    throw errorConflicto('Ya existe un voluntario registrado con ese email');
   }
 
   const experienciaAnos = Number(datos.experienciaAnos) || 0;
@@ -64,7 +76,7 @@ async function obtenerVoluntario(id) {
   });
 
   if (!voluntario) {
-    throw new Error('Voluntario no encontrado');
+    throw errorNoEncontrado('Voluntario no encontrado');
   }
 
   return voluntario;
