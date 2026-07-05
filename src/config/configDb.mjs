@@ -3,6 +3,7 @@ import { HOST, DB_PORT, DB_USERNAME, PASSWORD, DATABASE } from './configEnv.mjs'
 import { Usuario } from '../entities/usuario.entity.mjs';
 import { Proyecto } from '../entities/proyecto.entity.mjs';
 import { Material } from '../entities/material.entity.mjs';
+import { AsignacionMaterial } from '../entities/asignacionMaterial.entity.mjs';
 import { HistorialStock } from '../entities/historialStock.entity.mjs';
 import { Voluntario } from '../entities/voluntario.entity.mjs';
 import { Donacion } from '../entities/donacion.entity.mjs';
@@ -18,7 +19,7 @@ export const AppDataSource = new DataSource({
     database: DATABASE,
     synchronize: true,
     logging: false,
-    entities: [Usuario, Proyecto, Material, HistorialStock, Voluntario, Donacion, Cuadrilla, CuadrillaVoluntario],
+    entities: [Usuario, Proyecto, Material, AsignacionMaterial, HistorialStock, Voluntario, Donacion, Cuadrilla, CuadrillaVoluntario],
 });
 
 export async function connectDb() {

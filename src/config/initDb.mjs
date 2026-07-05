@@ -33,6 +33,7 @@ export async function createInitialUsers() {
 export async function createInitialData() {
     const proyectoRepo = AppDataSource.getRepository('Proyecto');
     const materialRepo = AppDataSource.getRepository('Material');
+    const asignacionRepo = AppDataSource.getRepository('AsignacionMaterial');
     const voluntarioRepo = AppDataSource.getRepository('Voluntario');
     const donacionRepo = AppDataSource.getRepository('Donacion');
 
@@ -59,36 +60,55 @@ export async function createInitialData() {
         },
     ]);
 
-    await materialRepo.save([
+    const materiales = await materialRepo.save([
         {
             nombre: 'Ladrillos',
             descripcion: 'Ladrillo fiscal cerámico 10x20x5cm',
-            estado: 'Disponible',
-            proyectoId: proyectos[0].id,
+            cantidadDisponible: 350,
+            umbralBajoStock: 100,
         },
         {
             nombre: 'Cemento',
             descripcion: 'Saco de cemento Portland 42.5 kg',
-            estado: 'Disponible',
-            proyectoId: proyectos[0].id,
+            cantidadDisponible: 15,
+            umbralBajoStock: 20,
         },
         {
             nombre: 'Tejas',
             descripcion: 'Teja cerámica curvas para techumbre',
-            estado: 'Disponible',
-            proyectoId: proyectos[1].id,
+            cantidadDisponible: 120,
+            umbralBajoStock: 50,
         },
         {
             nombre: 'Madera 2x4',
             descripcion: 'Pino cepillado 2x4 pulgadas x 3.2m',
-            estado: 'Disponible',
-            proyectoId: proyectos[2].id,
+            cantidadDisponible: 0,
+            umbralBajoStock: 30,
         },
         {
             nombre: 'Pintura blanca',
             descripcion: 'Galón de pintura blanca lavable 5L',
-            estado: 'Disponible',
+            cantidadDisponible: 40,
+            umbralBajoStock: 10,
+            enCaminoManual: true,
+        },
+    ]);
+
+    await asignacionRepo.save([
+        {
+            materialId: materiales[0].id,
+            proyectoId: proyectos[0].id,
+            cantidadAsignada: 150,
+        },
+        {
+            materialId: materiales[1].id,
+            proyectoId: proyectos[0].id,
+            cantidadAsignada: 65,
+        },
+        {
+            materialId: materiales[2].id,
             proyectoId: proyectos[1].id,
+            cantidadAsignada: 80,
         },
     ]);
 

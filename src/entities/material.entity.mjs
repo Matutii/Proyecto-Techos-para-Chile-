@@ -18,28 +18,25 @@ export const Material = new EntitySchema({
             type: "text",
             nullable: true,
         },
-        estado: {
-            type: "enum",
-            enum: ["Disponible", "Agotado", "En_camino"],
-            default: "Disponible",
-        },
-        proyectoId: {
+        cantidadDisponible: {
             type: "int",
-            nullable: true,
-            name: "proyecto_id",
+            default: 0,
+            name: "cantidad_disponible",
+        },
+        umbralBajoStock: {
+            type: "int",
+            nullable: false,
+            name: "umbral_bajo_stock",
+        },
+        enCaminoManual: {
+            type: "boolean",
+            default: false,
+            name: "en_camino_manual",
         },
         actualizadoEn: {
             type: "timestamp",
             createDate: true,
             name: "actualizado_en",
-        },
-    },
-    relations: {
-        proyecto: {
-            type: "many-to-one",
-            target: "Proyecto",
-            joinColumn: { name: "proyecto_id" },
-            onDelete: "SET NULL",
         },
     },
 });

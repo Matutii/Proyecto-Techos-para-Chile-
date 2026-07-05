@@ -15,6 +15,8 @@ router.get('/', verificarToken, v.listarStock, check, ctrl.listarMateriales);
 router.get('/proyectos', verificarToken, ctrl.vistaPorProyectos);
 router.get('/:id', verificarToken, ctrl.obtenerMaterial);
 router.post('/', verificarToken, soloAccesoBodega, v.crearMaterial, check, ctrl.crearMaterial);
-router.patch('/:id/estado', verificarToken, soloAccesoBodega, v.actualizarEstado, check, ctrl.actualizarEstado);
+router.post('/:id/entrada', verificarToken, soloAccesoBodega, v.registrarEntrada, check, ctrl.registrarEntrada);
+router.post('/:id/asignar', verificarToken, soloAccesoBodega, v.asignarAProyecto, check, ctrl.asignarAProyecto);
+router.patch('/:id/en-camino', verificarToken, soloAccesoBodega, v.actualizarEnCamino, check, ctrl.actualizarEnCamino);
 
 module.exports = router;

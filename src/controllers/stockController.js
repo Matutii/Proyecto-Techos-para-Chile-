@@ -30,10 +30,30 @@ async function crearMaterial(req, res, next) {
   }
 }
 
-async function actualizarEstado(req, res, next) {
+async function registrarEntrada(req, res, next) {
   try {
-    const { estado, observacion } = req.body;
-    const material = await stockService.actualizarEstado(req.params.id, estado, observacion, req.usuario.id);
+    const { cantidad, observacion } = req.body;
+    const material = await stockService.registrarEntrada(req.params.id, cantidad, req.usuario.id, observacion);
+    res.json(material);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function asignarAProyecto(req, res, next) {
+  try {
+    const { proyectoId, cantidad, observacion } = req.body;
+    const material = await stockService.asignarAProyecto(req.params.id, proyectoId, cantidad, req.usuario.id, observacion);
+    res.json(material);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function actualizarEnCamino(req, res, next) {
+  try {
+    const { enCaminoManual } = req.body;
+    const material = await stockService.actualizarEnCamino(req.params.id, enCaminoManual);
     res.json(material);
   } catch (err) {
     next(err);
@@ -53,6 +73,8 @@ module.exports = {
   listarMateriales,
   obtenerMaterial,
   crearMaterial,
-  actualizarEstado,
+  registrarEntrada,
+  asignarAProyecto,
+  actualizarEnCamino,
   vistaPorProyectos,
 };

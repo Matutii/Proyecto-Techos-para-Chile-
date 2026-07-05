@@ -14,17 +14,20 @@ export const HistorialStock = new EntitySchema({
             nullable: false,
             name: "material_id",
         },
-        estadoAnterior: {
-            type: "varchar",
-            length: 50,
-            nullable: true,
-            name: "estado_anterior",
-        },
-        estadoNuevo: {
-            type: "varchar",
-            length: 50,
+        tipoMovimiento: {
+            type: "enum",
+            enum: ["entrada", "asignacion"],
             nullable: false,
-            name: "estado_nuevo",
+            name: "tipo_movimiento",
+        },
+        cantidad: {
+            type: "int",
+            nullable: false,
+        },
+        proyectoId: {
+            type: "int",
+            nullable: true,
+            name: "proyecto_id",
         },
         usuarioId: {
             type: "int",
