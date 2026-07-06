@@ -1,31 +1,42 @@
-const COLORES = {
+import {
+  CheckCircle2,
+  AlertTriangle,
+  XCircle,
+  Truck,
+  Clock,
+  Users,
+  Ban,
+} from 'lucide-react';
+
+const ESTILOS = {
   // Stock
-  Disponible: '#1a7f37',
-  Bajo_Stock: '#9a6700',
-  Agotado: '#cf222e',
-  En_camino: '#0969da',
+  Disponible: { color: '#1a7f37', Icono: CheckCircle2 },
+  Bajo_Stock: { color: '#9a6700', Icono: AlertTriangle },
+  Agotado: { color: '#cf222e', Icono: XCircle },
+  En_camino: { color: '#0969da', Icono: Truck },
   // Voluntarios
-  Pendiente: '#9a6700',
-  Activo: '#1a7f37',
-  Rechazado: '#cf222e',
+  Pendiente: { color: '#9a6700', Icono: Clock },
+  Activo: { color: '#1a7f37', Icono: CheckCircle2 },
+  Rechazado: { color: '#cf222e', Icono: XCircle },
   // Donaciones
-  pendiente: '#9a6700',
-  confirmada: '#1a7f37',
-  rechazada: '#cf222e',
+  pendiente: { color: '#9a6700', Icono: Clock },
+  confirmada: { color: '#1a7f37', Icono: CheckCircle2 },
+  rechazada: { color: '#cf222e', Icono: XCircle },
   // Cuadrillas
-  En_formacion: '#9a6700',
-  Lista_para_asignacion: '#1a7f37',
-  Disuelta: '#57606a',
+  En_formacion: { color: '#9a6700', Icono: Users },
+  Lista_para_asignacion: { color: '#1a7f37', Icono: CheckCircle2 },
+  Disuelta: { color: '#57606a', Icono: Ban },
 };
 
 export function EstadoBadge({ estado }) {
-  const color = COLORES[estado] || '#57606a';
+  const { color, Icono } = ESTILOS[estado] || { color: '#57606a', Icono: null };
 
   return (
     <span
       className="badge"
       style={{ backgroundColor: `${color}1a`, color, borderColor: color }}
     >
+      {Icono && <Icono size={13} strokeWidth={2.5} aria-hidden="true" />}
       {estado?.replaceAll('_', ' ')}
     </span>
   );
