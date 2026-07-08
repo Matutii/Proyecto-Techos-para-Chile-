@@ -16,7 +16,7 @@ export const HistorialStock = new EntitySchema({
         },
         tipoMovimiento: {
             type: "enum",
-            enum: ["entrada", "asignacion"],
+            enum: ["entrada", "asignacion", "retiro"],
             nullable: false,
             name: "tipo_movimiento",
         },

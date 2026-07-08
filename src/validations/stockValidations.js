@@ -18,6 +18,11 @@ const asignarAProyecto = [
   body('observacion').optional().isString().isLength({ max: 500 }),
 ];
 
+const retirarStock = [
+  body('cantidad').isInt({ min: 1 }),
+  body('observacion').optional().isString().isLength({ max: 500 }),
+];
+
 const actualizarEnCamino = [
   body('enCaminoManual').isBoolean(),
   body('observacion').optional().isString().isLength({ max: 500 }),
@@ -32,6 +37,7 @@ module.exports = {
   crearMaterial,
   registrarEntrada,
   asignarAProyecto,
+  retirarStock,
   actualizarEnCamino,
   listarStock,
 };

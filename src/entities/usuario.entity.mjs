@@ -28,8 +28,9 @@ export const Usuario = new EntitySchema({
         },
         rol: {
             type: "enum",
-            enum: ["admin", "colaborador", "coordinador_logistica"],
+            enum: ["admin", "colaborador", "coordinador_logistica", "encargado_cuadrillas", "visitante"],
             nullable: false,
+            default: "visitante",
         },
         activo: {
             type: "boolean",

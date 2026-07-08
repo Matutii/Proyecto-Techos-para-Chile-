@@ -2,6 +2,8 @@ const { AppDataSource } = require('../config/configDb.mjs');
 
 const donacionRepo = () => AppDataSource.getRepository('Donacion');
 
+const ESTADOS_VALIDOS = ['pendiente', 'confirmada', 'rechazada'];
+
 // Crea una nueva donación con estado 'pendiente'
 async function crearDonacion(datos) {
   if (!datos.monto || Number(datos.monto) <= 0) {
@@ -35,6 +37,23 @@ async function listarDonaciones(filtros = {}) {
   });
 }
 
+// Actualiza el estado de una donación (aceptar = confirmada, rechazar = rechazada)
+async function actualizarEstado(id, estado) {
+  if (!ESTADOS_VALIDOS.includes(estado)) {
+    throw Object.assign(new Error(`Estado inválido. Use: ${ESTADOS_VALIDOS.join(', ')}`), { status: 400 });
+  }
+
+  const donacion = await donacionRepo().findOne({ where: { id: Number(id) } });
+  if (!donacion) {
+    throw Object.assign(new Error('Donación no encontrada'), { status: 404 });
+  }
+
+  donacion.estado = estado;
+  await donacionRepo().save(donacion);
+
+  return donacion;
+}
+
 // Retorna la lista estática de métodos de pago disponibles
 async function obtenerInfoMetodosPago() {
   return [
@@ -47,5 +66,6 @@ async function obtenerInfoMetodosPago() {
 module.exports = {
   crearDonacion,
   listarDonaciones,
+  actualizarEstado,
   obtenerInfoMetodosPago,
 };

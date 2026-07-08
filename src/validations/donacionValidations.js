@@ -1,4 +1,4 @@
-const { body, query } = require('express-validator');
+const { body, query, param } = require('express-validator');
 
 const crearDonacion = [
   body('donanteNombre')
@@ -36,4 +36,11 @@ const listarDonaciones = [
     .withMessage('Método de pago inválido'),
 ];
 
-module.exports = { crearDonacion, listarDonaciones };
+const actualizarEstado = [
+  param('id').isInt({ min: 1 }),
+  body('estado')
+    .isIn(['pendiente', 'confirmada', 'rechazada'])
+    .withMessage('Estado inválido. Use: pendiente, confirmada o rechazada'),
+];
+
+module.exports = { crearDonacion, listarDonaciones, actualizarEstado };

@@ -50,6 +50,16 @@ async function asignarAProyecto(req, res, next) {
   }
 }
 
+async function retirarStock(req, res, next) {
+  try {
+    const { cantidad, observacion } = req.body;
+    const material = await stockService.retirarStock(req.params.id, cantidad, req.usuario.id, observacion);
+    res.json(material);
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function actualizarEnCamino(req, res, next) {
   try {
     const { enCaminoManual } = req.body;
@@ -75,6 +85,7 @@ module.exports = {
   crearMaterial,
   registrarEntrada,
   asignarAProyecto,
+  retirarStock,
   actualizarEnCamino,
   vistaPorProyectos,
 };

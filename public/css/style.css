@@ -1,0 +1,307 @@
+/* Estilos generales */
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f2f2f2;
+  color: #222;
+}
+
+h1, h2, h3 {
+  margin: 0 0 10px 0;
+}
+
+a {
+  color: inherit;
+}
+
+.oculto {
+  display: none;
+}
+
+/* Barra superior */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #ffffff;
+  padding: 15px 25px;
+  border-bottom: 2px solid #ddd;
+}
+
+.topbar img {
+  width: 40px;
+  height: 40px;
+}
+
+/* Sección pública (login / registro / donar) */
+.hero {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.hero-copy {
+  flex: 1;
+  min-width: 260px;
+}
+
+.hero-copy p {
+  color: #444;
+  line-height: 1.5;
+}
+
+.card {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 20px;
+  min-width: 260px;
+  flex: 1;
+}
+
+/* Pestañas de login/registro/donar */
+.tabs-auth {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #ccc;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: 15px;
+  color: #666;
+}
+
+.tab-btn.activo {
+  color: #1a1a1a;
+  font-weight: bold;
+  border-bottom: 3px solid #d9534f;
+}
+
+/* Formularios */
+.form-field {
+  margin-bottom: 12px;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #555;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* Botones */
+.btn {
+  display: inline-block;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 18px;
+  font-size: 14px;
+  cursor: pointer;
+  background-color: #333;
+  color: white;
+}
+
+.btn:hover {
+  background-color: #000;
+}
+
+.btn-ember {
+  background-color: #d9534f;
+}
+
+.btn-ember:hover {
+  background-color: #b8302c;
+}
+
+.btn-ghost {
+  background: none;
+  border: 1px solid #ccc;
+  color: #333;
+}
+
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 13px;
+}
+
+/* Mensajes de error / éxito */
+.msg {
+  padding: 8px 10px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.msg-error {
+  background-color: #f8d7da;
+  color: #842029;
+}
+
+.msg-ok {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+/* Layout de la app (después de iniciar sesión) */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 220px;
+  background-color: #ffffff;
+  border-right: 1px solid #ddd;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar .topbar-mini {
+  margin-bottom: 15px;
+}
+
+.rol-badge {
+  display: inline-block;
+  background-color: #333;
+  color: white;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  width: fit-content;
+}
+
+.nav-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 10px;
+  margin-bottom: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #444;
+  border-radius: 4px;
+}
+
+.nav-item:hover {
+  background-color: #f0f0f0;
+}
+
+.nav-item.activo {
+  background-color: #333;
+  color: white;
+}
+
+.btn-salir {
+  margin-top: auto;
+}
+
+.main {
+  flex: 1;
+  padding: 30px;
+}
+
+.sub {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.panel {
+  display: none;
+}
+
+.panel.activo {
+  display: block;
+}
+
+.grid-2 {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.grid-2 > * {
+  flex: 1;
+  min-width: 260px;
+}
+
+/* Tablas */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+}
+
+th, td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  font-size: 14px;
+}
+
+th {
+  background-color: #f5f5f5;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  color: white;
+}
+
+.badge-ok {
+  background-color: #198754;
+}
+
+.badge-warn {
+  background-color: #dc3545;
+}
+
+.badge-mid {
+  background-color: #0d6efd;
+}
+
+.toolbar {
+  margin-bottom: 15px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.vacio {
+  color: #777;
+  padding: 15px 0;
+}
+
+@media (max-width: 700px) {
+  .app-shell {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: auto;
+  }
+}

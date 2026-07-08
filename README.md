@@ -2,7 +2,7 @@
   <img src="assets/logo.png" width="300" alt="Techo para Chile" />
 </p>
 
-<h1 align="center">Techos Para Chile — Backend</h1>
+<h1 align="center">Techos Para Chile</h1>
 
 <p align="center">
   Sistema de gestión operacional para coordinación de voluntarios, materiales y donaciones en terreno.
@@ -12,7 +12,9 @@
 
 ## Descripción
 
-Sistema de gestión operacional para **Techos Para Chile**, organización que coordina cuadrillas de voluntarios en proyectos de construcción social. Actualmente en desarrollo, centraliza la gestión de stock de materiales, inscripción de voluntarios, autenticación por roles, registro de donaciones y asignación de cuadrillas.
+Sistema de gestión operacional para **Techos Para Chile**, organización que coordina cuadrillas de voluntarios en proyectos de construcción social. Centraliza la gestión de stock de materiales, inscripción de voluntarios, autenticación por roles, registro de donaciones y asignación de cuadrillas.
+
+Es una app monolítica: Express sirve tanto la API (`/api/*`) como el frontend estático (`public/`) desde el mismo proceso y puerto.
 
 ---
 
@@ -26,6 +28,7 @@ Sistema de gestión operacional para **Techos Para Chile**, organización que co
 | Base de datos | PostgreSQL 16 |
 | Autenticación | JWT + bcrypt |
 | Validación | express-validator |
+| Frontend | HTML/CSS/JS vanilla (`public/`), servido como estático por Express |
 
 ---
 
@@ -58,6 +61,8 @@ cp .env.example .env
 npm run dev
 ```
 
+La app completa (API + frontend) queda disponible en `http://localhost:3000`.
+
 ---
 
 ## Variables de entorno
@@ -87,6 +92,8 @@ El seed crea automáticamente estos usuarios al iniciar la app:
 | admin@techos.cl | Admin1234 | admin |
 | bodega@techos.cl | Admin1234 | coordinador_logistica |
 
+Además, cualquiera puede crear una cuenta propia con rol `visitante` desde `POST /api/auth/registro` (o el tab "Crear cuenta" del frontend). Los roles `colaborador` y `encargado_cuadrillas` los crea un admin desde el panel de Usuarios.
+
 ---
 
 ## API Endpoints
@@ -96,17 +103,29 @@ El seed crea automáticamente estos usuarios al iniciar la app:
 | Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
 | POST | `/login` | ❌ | Iniciar sesión |
+| POST | `/registro` | ❌ | Crear cuenta pública con rol `visitante` |
 | GET | `/perfil` | ✅ | Obtener perfil del usuario autenticado |
+
+### Usuarios — `/api/usuarios` (solo admin)
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/` | Listar usuarios |
+| POST | `/` | Crear cuenta con rol específico |
+| PATCH | `/:id` | Cambiar rol y/o activar/desactivar cuenta |
 
 ### Stock — `/api/stock`
 
 | Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
-| GET | `/` | ✅ | Listar materiales |
+| GET | `/` | ✅ | Listar materiales (cantidad, umbral, estado calculado) |
 | GET | `/proyectos` | ✅ | Vista agrupada por proyecto |
 | GET | `/:id` | ✅ | Obtener material + historial |
 | POST | `/` | ✅ | Crear material (admin/coordinador) |
-| PATCH | `/:id/estado` | ✅ | Actualizar estado del material |
+| POST | `/:id/entrada` | ✅ | Registrar entrada de stock (admin/coordinador) |
+| POST | `/:id/asignar` | ✅ | Asignar material a un proyecto (admin/coordinador) |
+| PATCH | `/:id/retiro` | ✅ | Retirar material (admin/coordinador/colaborador) |
+| PATCH | `/:id/en-camino` | ✅ | Marcar/desmarcar material en camino (admin/coordinador) |
 
 ### Voluntarios — `/api/voluntarios`
 
@@ -121,8 +140,9 @@ El seed crea automáticamente estos usuarios al iniciar la app:
 | Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
 | GET | `/metodos-pago` | ❌ | Métodos de pago disponibles |
-| POST | `/` | ❌ | Registrar una donación |
+| POST | `/` | opcional | Registrar una donación (si hay token, queda vinculada al usuario) |
 | GET | `/` | ✅ | Listar donaciones (admin/coordinador) |
+| PATCH | `/:id/estado` | ✅ | Aceptar o rechazar una donación (admin/coordinador) |
 
 ### Cuadrillas — `/api/cuadrillas`
 
@@ -130,10 +150,16 @@ El seed crea automáticamente estos usuarios al iniciar la app:
 |--------|------|------|-------------|
 | GET | `/` | ✅ | Listar cuadrillas |
 | GET | `/:id` | ✅ | Obtener cuadrilla + integrantes |
-| POST | `/` | ✅ | Crear cuadrilla (admin/coordinador) |
-| PUT | `/:id` | ✅ | Actualizar cuadrilla |
+| POST | `/` | ✅ | Crear cuadrilla (admin/coordinador/encargado_cuadrillas) |
+| PUT | `/:id` | ✅ | Actualizar cuadrilla (admin/coordinador/encargado_cuadrillas) |
 | DELETE | `/:id` | ✅ | Eliminar cuadrilla (solo admin) |
 | POST | `/:id/voluntarios` | ✅ | Agregar voluntario a cuadrilla |
+
+### Proyectos — `/api/proyectos`
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| GET | `/` | ✅ | Listar proyectos |
 
 ---
 

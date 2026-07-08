@@ -15,6 +15,9 @@ const check = (req, res, next)=>{
 //pots /api/auth/login
 //Publico: no requiere token, mostrara {token, usuario{id, nombre, email, rol, permisos}}
 router.post('/login', v.login, check, ctrl.login);
+//post /api/auth/registro
+//Publico: no requiere token, crea cuenta con rol visitante, mostrara {token, usuario{id, nombre, email, rol, permisos}}
+router.post('/registro', v.registro, check, ctrl.registro);
 //get /api/auth/perfil
 //Privado: requiere token, mostrara {id, nombre, email, rol, permisos}
 router.get('/perfil', verificarToken, ctrl.perfil);

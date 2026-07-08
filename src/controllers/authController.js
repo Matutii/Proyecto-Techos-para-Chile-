@@ -10,6 +10,16 @@ async function login(req, res, next) {
         next(error);
     }
 }
+// POST /api/auth/registro - Crea una cuenta pública con rol visitante y devuelve token
+async function registro(req, res, next) {
+    try {
+        const {nombre, email, password} = req.body;
+        const resultado = await authService.registro(nombre, email, password);
+        res.status(201).json(resultado);
+    } catch (error) {
+        next(error);
+    }
+}
 // GET /api/auth/perfil - Retorna perfil del usuario autenticado
 async function perfil(req, res, next){
     try{
@@ -19,4 +29,4 @@ async function perfil(req, res, next){
         next(error);
     }
 }
-module.exports = {login, perfil};
+module.exports = {login, registro, perfil};

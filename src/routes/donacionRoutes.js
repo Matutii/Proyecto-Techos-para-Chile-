@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { validationResult } = require('express-validator');
 const verificarToken = require('../middlewares/auth');
+const { verificarTokenOpcional } = require('../middlewares/auth');
 const { soloAccesoBodega } = require('../middlewares/roles');
 const ctrl = require('../controllers/donacionController');
 const v = require('../validations/donacionValidations');
@@ -18,11 +19,15 @@ const check = (req, res, next) => {
 router.get('/metodos-pago', ctrl.obtenerMetodosPago);
 
 // POST /api/donaciones
-// Público — cualquiera puede registrar una donación
-router.post('/', v.crearDonacion, check, ctrl.crearDonacion);
+// Público — cualquiera puede registrar una donación; si hay token válido, queda vinculada al usuario
+router.post('/', verificarTokenOpcional, v.crearDonacion, check, ctrl.crearDonacion);
 
 // GET /api/donaciones
 // Privado — solo admin y coordinador_logistica
 router.get('/', verificarToken, soloAccesoBodega, v.listarDonaciones, check, ctrl.listarDonaciones);
+
+// PATCH /api/donaciones/:id/estado
+// Privado — solo admin y coordinador_logistica
+router.patch('/:id/estado', verificarToken, soloAccesoBodega, v.actualizarEstado, check, ctrl.actualizarEstado);
 
 module.exports = router;

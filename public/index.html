@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Techos para Chile</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<!-- ======================= VISTA PÚBLICA ======================= -->
+<div id="vista-publica">
+  <div class="topbar">
+    <img src="/assets/logo.png" alt="Logo">
+    <h1>Techos para Chile</h1>
+  </div>
+
+  <div class="hero">
+    <div class="hero-copy">
+      <h2>Plataforma de coordinación</h2>
+      <p>
+        Cada persona entra con su propia cuenta y ve solo lo que le corresponde:
+        bodega administra el stock de materiales, los colaboradores retiran lo que
+        necesitan en terreno, los encargados arman las cuadrillas, y cualquier
+        visitante puede sumarse con una donación.
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="tabs-auth">
+        <button class="tab-btn activo" data-tab="login">Iniciar sesión</button>
+        <button class="tab-btn" data-tab="registro">Crear cuenta</button>
+        <button class="tab-btn" data-tab="donar">Donar</button>
+        <button class="tab-btn" data-tab="voluntario">Ser voluntario</button>
+      </div>
+
+      <div id="msg-auth"></div>
+
+      <!-- Login -->
+      <form id="form-login" class="tab-panel">
+        <div class="form-field">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" required>
+        </div>
+        <div class="form-field">
+          <label for="login-password">Contraseña</label>
+          <input type="password" id="login-password" required>
+        </div>
+        <button type="submit" class="btn btn-ember">Entrar</button>
+      </form>
+
+      <!-- Registro (rol visitante) -->
+      <form id="form-registro" class="tab-panel oculto">
+        <div class="form-field">
+          <label for="reg-nombre">Nombre completo</label>
+          <input type="text" id="reg-nombre" required>
+        </div>
+        <div class="form-field">
+          <label for="reg-email">Email</label>
+          <input type="email" id="reg-email" required>
+        </div>
+        <div class="form-field">
+          <label for="reg-password">Contraseña</label>
+          <input type="password" id="reg-password" minlength="6" required>
+        </div>
+        <button type="submit" class="btn btn-ember">Crear cuenta de visitante</button>
+      </form>
+
+      <!-- Donar (público, sin necesidad de cuenta) -->
+      <form id="form-donar-publico" class="tab-panel oculto">
+        <div class="form-field">
+          <label for="don-nombre">Nombre (opcional)</label>
+          <input type="text" id="don-nombre">
+        </div>
+        <div class="form-field">
+          <label for="don-email">Email (opcional)</label>
+          <input type="email" id="don-email">
+        </div>
+        <div class="form-field">
+          <label for="don-monto">Monto (CLP)</label>
+          <input type="number" id="don-monto" min="1" step="1" required>
+        </div>
+        <div class="form-field">
+          <label for="don-metodo">Método de pago</label>
+          <select id="don-metodo">
+            <option value="transferencia">Transferencia</option>
+            <option value="tarjeta">Tarjeta</option>
+            <option value="efectivo">Efectivo</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-ember">Donar ahora</button>
+      </form>
+
+      <!-- Inscripción de voluntarios (público, sin necesidad de cuenta) -->
+      <form id="form-voluntario" class="tab-panel oculto">
+        <div class="form-field">
+          <label for="vol-nombre">Nombre</label>
+          <input type="text" id="vol-nombre" minlength="3" maxlength="100" required>
+        </div>
+        <div class="form-field">
+          <label for="vol-apellido">Apellido</label>
+          <input type="text" id="vol-apellido" minlength="3" maxlength="100" required>
+        </div>
+        <div class="form-field">
+          <label for="vol-email">Email</label>
+          <input type="email" id="vol-email" required>
+        </div>
+        <div class="form-field">
+          <label for="vol-telefono">Teléfono (opcional)</label>
+          <input type="text" id="vol-telefono" minlength="6" maxlength="20">
+        </div>
+        <div class="form-field">
+          <label for="vol-datos-medicos">Datos médicos</label>
+          <textarea id="vol-datos-medicos" rows="2" minlength="5" maxlength="1000" required></textarea>
+        </div>
+        <div class="form-field">
+          <label for="vol-contacto-nombre">Contacto de emergencia — nombre</label>
+          <input type="text" id="vol-contacto-nombre" minlength="3" maxlength="100" required>
+        </div>
+        <div class="form-field">
+          <label for="vol-contacto-telefono">Contacto de emergencia — teléfono</label>
+          <input type="text" id="vol-contacto-telefono" minlength="6" maxlength="20" required>
+        </div>
+        <div class="form-field">
+          <label for="vol-experiencia">Años de experiencia (opcional)</label>
+          <input type="number" id="vol-experiencia" min="0" max="70">
+        </div>
+        <div class="form-field">
+          <label for="vol-habilidades">Habilidades (opcional)</label>
+          <textarea id="vol-habilidades" rows="2" maxlength="1000"></textarea>
+        </div>
+        <div class="form-field">
+          <label><input type="checkbox" id="vol-terminos" required> Acepto los términos y condiciones</label>
+        </div>
+        <button type="submit" class="btn btn-ember">Inscribirme</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= VISTA APP (post-login) ======================= -->
+<div id="vista-app" class="app-shell oculto">
+  <aside class="sidebar">
+    <div class="topbar-mini">
+      <img src="/assets/logo.png" alt="Logo" style="width:35px;">
+      <strong>Techos para Chile</strong>
+    </div>
+    <span class="rol-badge" id="badge-rol">rol</span>
+
+    <nav id="nav-app"></nav>
+
+    <button class="btn btn-ghost btn-salir" id="btn-salir">Cerrar sesión</button>
+  </aside>
+
+  <main class="main">
+
+    <!-- Panel: Usuarios (admin) -->
+    <section class="panel" id="panel-usuarios">
+      <h2>Usuarios</h2>
+      <p class="sub">Crea cuentas para bodega, colaboradores, encargados de cuadrillas u otros administradores.</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="margin-bottom:14px;font-size:15px;">Nueva cuenta</h3>
+          <div id="msg-usuarios"></div>
+          <form id="form-nuevo-usuario">
+            <div class="form-field">
+              <label>Nombre</label>
+              <input type="text" id="nu-nombre" required>
+            </div>
+            <div class="form-field">
+              <label>Email</label>
+              <input type="email" id="nu-email" required>
+            </div>
+            <div class="form-field">
+              <label>Contraseña</label>
+              <input type="password" id="nu-password" minlength="6" required>
+            </div>
+            <div class="form-field">
+              <label>Rol</label>
+              <select id="nu-rol">
+                <option value="coordinador_logistica">Bodega (coordinador_logistica)</option>
+                <option value="colaborador">Colaborador</option>
+                <option value="encargado_cuadrillas">Encargado de cuadrillas</option>
+                <option value="admin">Administrador</option>
+                <option value="visitante">Visitante</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-ember">Crear usuario</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-bottom:14px;font-size:15px;">Cuentas existentes</h3>
+          <div id="tabla-usuarios"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Panel: Bodega / Stock -->
+    <section class="panel" id="panel-bodega">
+      <h2>Bodega</h2>
+      <p class="sub" id="sub-bodega">Materiales disponibles para los proyectos activos.</p>
+
+      <div id="bloque-crear-material" class="card" style="margin-bottom:24px;">
+        <h3 style="margin-bottom:14px;font-size:15px;">Ingresar material</h3>
+        <div id="msg-material"></div>
+        <form id="form-material">
+          <div class="form-field">
+            <label>Nombre del material</label>
+            <input type="text" id="mat-nombre" required>
+          </div>
+          <div class="form-field">
+            <label>Descripción</label>
+            <textarea id="mat-desc" rows="2"></textarea>
+          </div>
+          <div class="form-field">
+            <label>Cantidad inicial (opcional)</label>
+            <input type="number" id="mat-cantidad" min="0" step="1">
+          </div>
+          <div class="form-field">
+            <label>Umbral de bajo stock</label>
+            <input type="number" id="mat-umbral" min="0" step="1" required>
+          </div>
+          <button type="submit" class="btn btn-ember">Agregar a bodega</button>
+        </form>
+      </div>
+
+      <div id="bloque-acciones-bodega" class="grid-2" style="margin-bottom:24px;">
+        <div class="card">
+          <h3 style="margin-bottom:14px;font-size:15px;">Registrar entrada de stock</h3>
+          <div id="msg-entrada"></div>
+          <form id="form-entrada">
+            <div class="form-field">
+              <label>Material</label>
+              <select id="ent-material-id"></select>
+            </div>
+            <div class="form-field">
+              <label>Cantidad</label>
+              <input type="number" id="ent-cantidad" min="1" step="1" required>
+            </div>
+            <div class="form-field">
+              <label>Observación (opcional)</label>
+              <input type="text" id="ent-observacion">
+            </div>
+            <button type="submit" class="btn btn-ember">Registrar entrada</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-bottom:14px;font-size:15px;">Asignar material a proyecto</h3>
+          <div id="msg-asignar"></div>
+          <form id="form-asignar">
+            <div class="form-field">
+              <label>Material</label>
+              <select id="asig-material-id"></select>
+            </div>
+            <div class="form-field">
+              <label>Proyecto</label>
+              <select id="asig-proyecto-id"></select>
+            </div>
+            <div class="form-field">
+              <label>Cantidad</label>
+              <input type="number" id="asig-cantidad" min="1" step="1" required>
+            </div>
+            <button type="submit" class="btn btn-ember">Asignar</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn btn-ghost btn-sm" data-filtro-stock="">Todos</button>
+        <button class="btn btn-ghost btn-sm" data-filtro-stock="Disponible">Disponibles</button>
+        <button class="btn btn-ghost btn-sm" data-filtro-stock="Bajo_Stock">Bajo stock</button>
+        <button class="btn btn-ghost btn-sm" data-filtro-stock="Agotado">Agotados</button>
+        <button class="btn btn-ghost btn-sm" data-filtro-stock="En_camino">En camino</button>
+      </div>
+
+      <div id="tabla-stock"></div>
+    </section>
+
+    <!-- Panel: Vista de stock por proyectos -->
+    <section class="panel" id="panel-stock-proyectos">
+      <h2>Stock por proyecto</h2>
+      <p class="sub">Conteo de materiales según su estado, agrupados por proyecto.</p>
+      <div id="tabla-stock-proyectos"></div>
+    </section>
+
+    <!-- Panel: Proyectos -->
+    <section class="panel" id="panel-proyectos">
+      <h2>Proyectos</h2>
+      <p class="sub">Obras en curso o planificadas.</p>
+      <div id="tabla-proyectos"></div>
+    </section>
+
+    <!-- Panel: Cuadrillas -->
+    <section class="panel" id="panel-cuadrillas">
+      <h2>Cuadrillas</h2>
+      <p class="sub">Equipos de trabajo asignados a los proyectos.</p>
+
+      <div id="bloque-crear-cuadrilla" class="card" style="margin-bottom:24px;">
+        <h3 style="margin-bottom:14px;font-size:15px;">Nueva cuadrilla</h3>
+        <div id="msg-cuadrilla"></div>
+        <form id="form-cuadrilla">
+          <div class="form-field">
+            <label>Nombre</label>
+            <input type="text" id="cu-nombre" required>
+          </div>
+          <div class="form-field">
+            <label>Especialidad</label>
+            <select id="cu-especialidad">
+              <option value="fuerza_general">Fuerza general</option>
+              <option value="tecnico">Técnico</option>
+              <option value="logistica">Logística</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-ember">Crear cuadrilla</button>
+        </form>
+      </div>
+
+      <div id="tabla-cuadrillas"></div>
+
+      <div id="bloque-detalle-cuadrilla" class="card oculto" style="margin-top:24px;">
+        <h3 id="detalle-cuadrilla-titulo" style="margin-bottom:14px;font-size:15px;"></h3>
+        <div id="msg-detalle-cuadrilla"></div>
+
+        <form id="form-editar-cuadrilla" style="margin-bottom:20px;">
+          <div class="form-field">
+            <label>Nombre</label>
+            <input type="text" id="ecu-nombre" required>
+          </div>
+          <div class="form-field">
+            <label>Especialidad</label>
+            <select id="ecu-especialidad">
+              <option value="fuerza_general">Fuerza general</option>
+              <option value="tecnico">Técnico</option>
+              <option value="logistica">Logística</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Estado</label>
+            <select id="ecu-estado">
+              <option value="En_formacion">En formación</option>
+              <option value="Lista_para_asignacion">Lista para asignación</option>
+              <option value="Disuelta">Disuelta</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-ember">Guardar cambios</button>
+        </form>
+
+        <h4 style="margin-bottom:10px;font-size:14px;">Voluntarios asignados</h4>
+        <div id="tabla-voluntarios-cuadrilla" style="margin-bottom:20px;"></div>
+
+        <h4 style="margin-bottom:10px;font-size:14px;">Agregar voluntario</h4>
+        <form id="form-agregar-voluntario">
+          <div class="form-field">
+            <label>Voluntario</label>
+            <select id="agv-voluntario-id"></select>
+          </div>
+          <button type="submit" class="btn btn-ember">Agregar a la cuadrilla</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Panel: Voluntarios -->
+    <section class="panel" id="panel-voluntarios">
+      <h2>Voluntarios</h2>
+      <p class="sub">Personas inscritas para sumarse a las cuadrillas.</p>
+      <div id="tabla-voluntarios"></div>
+    </section>
+
+    <!-- Panel: Donaciones (bodega/admin) -->
+    <section class="panel" id="panel-donaciones">
+      <h2>Donaciones</h2>
+      <p class="sub">Registro de aportes recibidos.</p>
+      <div id="tabla-donaciones"></div>
+    </section>
+
+    <!-- Panel: Donar (visitante) -->
+    <section class="panel" id="panel-donar">
+      <h2>Donar</h2>
+      <p class="sub">Tu aporte queda registrado a tu cuenta.</p>
+      <div class="card" style="max-width:420px;">
+        <div id="msg-donar-app"></div>
+        <form id="form-donar-app">
+          <div class="form-field">
+            <label>Monto (CLP)</label>
+            <input type="number" id="donapp-monto" min="1" step="1" required>
+          </div>
+          <div class="form-field">
+            <label>Método de pago</label>
+            <select id="donapp-metodo">
+              <option value="transferencia">Transferencia</option>
+              <option value="tarjeta">Tarjeta</option>
+              <option value="efectivo">Efectivo</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-ember">Donar ahora</button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>

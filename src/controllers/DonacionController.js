@@ -48,4 +48,18 @@ async function obtenerMetodosPago(req, res, next) {
   }
 }
 
-module.exports = { crearDonacion, listarDonaciones, obtenerMetodosPago };
+// PATCH /api/donaciones/:id/estado
+// Privado — requiere token (admin o coordinador_logistica)
+async function actualizarEstado(req, res, next) {
+  try {
+    const { estado } = req.body;
+
+    const donacion = await donacionService.actualizarEstado(req.params.id, estado);
+
+    res.json(donacion);
+  } catch (error) {
+    next(error);
+  }
+}
+
+module.exports = { crearDonacion, listarDonaciones, obtenerMetodosPago, actualizarEstado };

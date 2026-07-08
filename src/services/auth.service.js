@@ -52,6 +52,53 @@ async function login(email, password) {
     },
   };
 }
+// Registra una cuenta pública con rol 'visitante' y retorna token JWT + datos del usuario.
+// Los demás roles solo los puede crear un admin (ver usuario.service.js).
+/**
+ * @param {string} nombre
+ * @param {string} email
+ * @param {string} password
+ * @returns {Promise<{token: string, usuario: object}>}
+ */
+async function registro(nombre, email, password) {
+  const emailNormalizado = email.toLowerCase().trim();
+
+  const existente = await usuarioRepo().findOne({ where: { email: emailNormalizado } });
+  if (existente) {
+    throw Object.assign(new Error('Ya existe una cuenta registrada con ese email'), { status: 409 });
+  }
+
+  const passwordHash = await bcrypt.hash(password, 10);
+
+  const usuario = await usuarioRepo().save({
+    nombre,
+    email: emailNormalizado,
+    passwordHash,
+    rol: 'visitante',
+  });
+
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET no configurado en el entorno');
+  }
+
+  const token = jwt.sign(
+    { id: usuario.id, rol: usuario.rol },
+    secret,
+    { expiresIn: process.env.JWT_EXPIRES_IN || '8h' },
+  );
+
+  return {
+    token,
+    usuario: {
+      id:       usuario.id,
+      nombre:   usuario.nombre,
+      email:    usuario.email,
+      rol:      usuario.rol,
+      permisos: resolverPermisos(usuario.rol),
+    },
+  };
+}
 // Retorna el perfil del usuario autenticado
 /**
  * @param {number} id
@@ -105,9 +152,25 @@ function resolverPermisos(rol) {
       editarDonaciones:   false,
       administrarUsuarios:false,
     },
+    encargado_cuadrillas: {
+      verDashboard:       true,
+      editarProyectos:    false,
+      editarStock:        false,
+      editarVoluntarios:  true,
+      editarDonaciones:   false,
+      administrarUsuarios:false,
+    },
+    visitante: {
+      verDashboard:       false,
+      editarProyectos:    false,
+      editarStock:        false,
+      editarVoluntarios:  false,
+      editarDonaciones:   false,
+      administrarUsuarios:false,
+    },
   };
 
   return permisos[rol] ?? permisos['colaborador'];
 }
 
-module.exports = { login, obtenerPerfil };
+module.exports = { login, registro, obtenerPerfil };

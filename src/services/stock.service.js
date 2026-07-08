@@ -172,6 +172,38 @@ async function asignarAProyecto(materialId, proyectoId, cantidad, usuarioId, obs
   return await obtenerMaterial(material.id);
 }
 
+// Retira unidades del stock general (uso del colaborador en terreno), sin bajar de 0
+async function retirarStock(materialId, cantidad, usuarioId, observacion) {
+  const material = await materialRepo().findOne({ where: { id: Number(materialId) } });
+
+  if (!material) {
+    throw errorNoEncontrado('Material no encontrado');
+  }
+
+  const cant = Number(cantidad);
+
+  if (material.cantidadDisponible < cant) {
+    const err = new Error('Stock insuficiente');
+    err.status = 400;
+    throw err;
+  }
+
+  await materialRepo().update(material.id, {
+    cantidadDisponible: material.cantidadDisponible - cant,
+  });
+
+  await historialRepo().save({
+    materialId: material.id,
+    tipoMovimiento: 'retiro',
+    cantidad: cant,
+    proyectoId: null,
+    usuarioId,
+    observacion: observacion || null,
+  });
+
+  return await obtenerMaterial(material.id);
+}
+
 // Actualiza el flag manual de "en camino" de un material
 async function actualizarEnCamino(materialId, enCaminoManual) {
   const material = await materialRepo().findOne({ where: { id: Number(materialId) } });
@@ -213,6 +245,7 @@ module.exports = {
   crearMaterial,
   registrarEntrada,
   asignarAProyecto,
+  retirarStock,
   actualizarEnCamino,
   vistaPorProyectos,
 };
