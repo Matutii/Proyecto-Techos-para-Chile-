@@ -12,9 +12,8 @@ function errorNoEncontrado(mensaje) {
   return err;
 }
 
-// Calcula el estado del material a partir de su cantidad, umbral y el flag manual de en camino
-function calcularEstado(cantidadDisponible, umbralBajoStock, enCaminoManual) {
-  if (enCaminoManual) return 'En_camino';
+// Calcula el estado del material a partir de su cantidad y umbral
+function calcularEstado(cantidadDisponible, umbralBajoStock) {
   if (cantidadDisponible > umbralBajoStock) return 'Disponible';
   if (cantidadDisponible > 0) return 'Bajo_Stock';
   return 'Agotado';
@@ -35,7 +34,7 @@ async function listarMateriales(filtros = {}) {
 
   const conEstado = materiales.map((m) => ({
     ...m,
-    estado: calcularEstado(m.cantidadDisponible, m.umbralBajoStock, m.enCaminoManual),
+    estado: calcularEstado(m.cantidadDisponible, m.umbralBajoStock),
   }));
 
   if (filtros.estado) {
@@ -60,10 +59,20 @@ async function obtenerMaterial(id) {
     order: { registradoEn: 'DESC' },
   });
 
+  // El historial guarda solo proyectoId; se agrega el nombre para mostrarlo en la UI
+  const proyectos = await proyectoRepo().find();
+  const nombrePorId = {};
+  proyectos.forEach((p) => { nombrePorId[p.id] = p.nombre; });
+
+  const historialConProyecto = historial.map((h) => ({
+    ...h,
+    proyectoNombre: h.proyectoId ? (nombrePorId[h.proyectoId] || null) : null,
+  }));
+
   return {
     ...material,
-    estado: calcularEstado(material.cantidadDisponible, material.umbralBajoStock, material.enCaminoManual),
-    historialStock: historial,
+    estado: calcularEstado(material.cantidadDisponible, material.umbralBajoStock),
+    historialStock: historialConProyecto,
   };
 }
 
@@ -88,6 +97,23 @@ async function crearMaterial(datos, usuarioId) {
       observacion: 'Alta inicial',
     });
   }
+
+  return await obtenerMaterial(material.id);
+}
+
+// Edita los datos descriptivos de un material (la cantidad solo cambia por entradas/retiros)
+async function actualizarMaterial(materialId, datos) {
+  const material = await materialRepo().findOne({ where: { id: Number(materialId) } });
+
+  if (!material) {
+    throw errorNoEncontrado('Material no encontrado');
+  }
+
+  if (datos.nombre !== undefined) material.nombre = datos.nombre;
+  if (datos.descripcion !== undefined) material.descripcion = datos.descripcion;
+  if (datos.umbralBajoStock !== undefined) material.umbralBajoStock = Number(datos.umbralBajoStock);
+
+  await materialRepo().save(material);
 
   return await obtenerMaterial(material.id);
 }
@@ -204,19 +230,6 @@ async function retirarStock(materialId, cantidad, usuarioId, observacion) {
   return await obtenerMaterial(material.id);
 }
 
-// Actualiza el flag manual de "en camino" de un material
-async function actualizarEnCamino(materialId, enCaminoManual) {
-  const material = await materialRepo().findOne({ where: { id: Number(materialId) } });
-
-  if (!material) {
-    throw errorNoEncontrado('Material no encontrado');
-  }
-
-  await materialRepo().update(material.id, { enCaminoManual: !!enCaminoManual });
-
-  return await obtenerMaterial(material.id);
-}
-
 // Devuelve, por cada proyecto, el detalle de materiales asignados (con cantidad y estado)
 async function vistaPorProyectos() {
   const proyectos = await proyectoRepo().find({ order: { id: 'ASC' } });
@@ -229,7 +242,7 @@ async function vistaPorProyectos() {
         materialId: a.material.id,
         nombre: a.material.nombre,
         cantidadAsignada: a.cantidadAsignada,
-        estado: calcularEstado(a.material.cantidadDisponible, a.material.umbralBajoStock, a.material.enCaminoManual),
+        estado: calcularEstado(a.material.cantidadDisponible, a.material.umbralBajoStock),
       }));
 
     return {
@@ -245,9 +258,9 @@ module.exports = {
   listarMateriales,
   obtenerMaterial,
   crearMaterial,
+  actualizarMaterial,
   registrarEntrada,
   asignarAProyecto,
   retirarStock,
-  actualizarEnCamino,
   vistaPorProyectos,
 };

@@ -136,6 +136,7 @@ function cablearFormularios() {
   document.getElementById('form-material').addEventListener('submit', crearMaterial);
   document.getElementById('form-entrada').addEventListener('submit', registrarEntrada);
   document.getElementById('form-asignar').addEventListener('submit', asignarAProyecto);
+  document.getElementById('form-editar-material').addEventListener('submit', editarMaterial);
   document.getElementById('form-proyecto').addEventListener('submit', crearProyecto);
   document.getElementById('form-editar-proyecto').addEventListener('submit', editarProyecto);
   document.getElementById('form-cuadrilla').addEventListener('submit', crearCuadrilla);
@@ -277,8 +278,8 @@ async function cargarStock(estado) {
         acciones = '<button class="btn btn-ghost btn-sm" onclick="retirarMaterial(' + m.id + ')">Retirar</button>';
       } else if (rol === 'admin' || rol === 'coordinador_logistica') {
         acciones =
-          '<label style="font-size:12px;"><input type="checkbox" onchange="toggleEnCamino(' + m.id + ', this.checked)"' +
-          (m.enCaminoManual ? ' checked' : '') + '> En camino</label>';
+          '<button class="btn btn-ghost btn-sm" onclick="editarMaterialAbrir(' + m.id + ')">Editar</button> ' +
+          '<button class="btn btn-ghost btn-sm" onclick="verHistorialMaterial(' + m.id + ')">Historial</button>';
       }
 
       html += '<tr><td>' + m.nombre + '</td>' +
@@ -327,6 +328,81 @@ async function cargarProyectosParaAsignar() {
   }
 }
 
+let materialEnEdicionId = null;
+
+function editarMaterialAbrir(id) {
+  const material = ultimosMateriales.find(function (m) { return m.id === id; });
+  if (!material) return;
+
+  materialEnEdicionId = id;
+  document.getElementById('bloque-editar-material').classList.remove('oculto');
+  document.getElementById('ema-nombre').value = material.nombre;
+  document.getElementById('ema-desc').value = material.descripcion || '';
+  document.getElementById('ema-umbral').value = material.umbralBajoStock;
+}
+
+async function editarMaterial(e) {
+  e.preventDefault();
+  if (!materialEnEdicionId) return;
+
+  try {
+    await api('/stock/' + materialEnEdicionId, {
+      method: 'PUT',
+      body: {
+        nombre: document.getElementById('ema-nombre').value,
+        descripcion: document.getElementById('ema-desc').value,
+        umbralBajoStock: Number(document.getElementById('ema-umbral').value),
+      },
+    });
+    mostrarMensaje('msg-editar-material', 'Material actualizado.', false);
+    cargarStock('');
+  } catch (err) {
+    mostrarMensaje('msg-editar-material', err.message, true);
+  }
+}
+
+function nombreDeMovimiento(tipo) {
+  if (tipo === 'entrada') return 'Entrada';
+  if (tipo === 'asignacion') return 'Asignación';
+  if (tipo === 'retiro') return 'Retiro';
+  return tipo;
+}
+
+async function verHistorialMaterial(id) {
+  const bloque = document.getElementById('bloque-historial-material');
+  const contenedor = document.getElementById('tabla-historial-material');
+  bloque.classList.remove('oculto');
+  document.getElementById('historial-material-titulo').textContent = 'Historial de movimientos';
+  contenedor.innerHTML = 'Cargando...';
+
+  try {
+    const m = await api('/stock/' + id);
+    document.getElementById('historial-material-titulo').textContent = 'Historial de movimientos — ' + m.nombre;
+
+    const historial = m.historialStock || [];
+    if (historial.length === 0) {
+      contenedor.innerHTML = '<div class="vacio">Este material no tiene movimientos registrados.</div>';
+      return;
+    }
+
+    let html = '<table><thead><tr><th>Fecha</th><th>Movimiento</th><th>Cantidad</th><th>Usuario</th><th>Proyecto</th><th>Observación</th></tr></thead><tbody>';
+    for (let i = 0; i < historial.length; i++) {
+      const h = historial[i];
+      const colorBadge = h.tipoMovimiento === 'entrada' ? 'badge-ok' : (h.tipoMovimiento === 'retiro' ? 'badge-warn' : 'badge-mid');
+      html += '<tr><td>' + new Date(h.registradoEn).toLocaleString('es-CL') + '</td>' +
+        '<td><span class="badge ' + colorBadge + '">' + nombreDeMovimiento(h.tipoMovimiento) + '</span></td>' +
+        '<td>' + h.cantidad + '</td>' +
+        '<td>' + (h.usuario ? h.usuario.nombre : '—') + '</td>' +
+        '<td>' + (h.proyectoNombre || '—') + '</td>' +
+        '<td>' + (h.observacion || '—') + '</td></tr>';
+    }
+    html += '</tbody></table>';
+    contenedor.innerHTML = html;
+  } catch (err) {
+    contenedor.innerHTML = '<div class="msg msg-error">' + err.message + '</div>';
+  }
+}
+
 async function retirarMaterial(id) {
   const cantidad = prompt('¿Cuántas unidades quieres retirar?');
   if (!cantidad) return;
@@ -335,15 +411,6 @@ async function retirarMaterial(id) {
     await api('/stock/' + id + '/retiro', { method: 'PATCH', body: { cantidad: Number(cantidad), observacion: 'Retiro desde la plataforma' } });
     cargarStock('');
     mostrarMensaje('msg-stock', 'Retiro registrado.', false);
-  } catch (err) {
-    mostrarMensaje('msg-stock', err.message, true);
-  }
-}
-
-async function toggleEnCamino(id, enCaminoManual) {
-  try {
-    await api('/stock/' + id + '/en-camino', { method: 'PATCH', body: { enCaminoManual: enCaminoManual } });
-    cargarStock('');
   } catch (err) {
     mostrarMensaje('msg-stock', err.message, true);
   }

@@ -30,6 +30,15 @@ async function crearMaterial(req, res, next) {
   }
 }
 
+async function actualizarMaterial(req, res, next) {
+  try {
+    const material = await stockService.actualizarMaterial(req.params.id, req.body);
+    res.json(material);
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function registrarEntrada(req, res, next) {
   try {
     const { cantidad, observacion } = req.body;
@@ -60,16 +69,6 @@ async function retirarStock(req, res, next) {
   }
 }
 
-async function actualizarEnCamino(req, res, next) {
-  try {
-    const { enCaminoManual } = req.body;
-    const material = await stockService.actualizarEnCamino(req.params.id, enCaminoManual);
-    res.json(material);
-  } catch (err) {
-    next(err);
-  }
-}
-
 async function vistaPorProyectos(req, res, next) {
   try {
     const proyectos = await stockService.vistaPorProyectos();
@@ -83,9 +82,9 @@ module.exports = {
   listarMateriales,
   obtenerMaterial,
   crearMaterial,
+  actualizarMaterial,
   registrarEntrada,
   asignarAProyecto,
   retirarStock,
-  actualizarEnCamino,
   vistaPorProyectos,
 };

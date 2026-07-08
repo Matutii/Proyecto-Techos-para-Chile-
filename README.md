@@ -31,7 +31,7 @@ Es una app monolítica: Express sirve tanto la API (`/api/*`) como el frontend e
 
 ## Funcionalidades
 
-- **Bodega**: alta de materiales, entradas de stock, asignación a proyectos, retiros en terreno y estado calculado automáticamente (Disponible / Bajo stock / Agotado / En camino), con historial completo de movimientos.
+- **Bodega**: alta y edición de materiales, entradas de stock, asignación a proyectos, retiros en terreno y estado calculado automáticamente (Disponible / Bajo stock / Agotado), con historial completo de movimientos.
 - **Proyectos**: creación y edición de obras, con vista de stock asignado por proyecto.
 - **Voluntarios**: inscripción pública con ficha completa (datos médicos, contacto de emergencia, experiencia), clasificación automática de especialidad y flujo de aprobación/rechazo.
 - **Cuadrillas**: creación de equipos de trabajo y asignación de voluntarios aprobados.
@@ -139,7 +139,7 @@ Además, cualquiera puede crear una cuenta propia con rol `visitante` desde `POS
 | POST | `/:id/entrada` | ✅ | Registrar entrada de stock (admin/coordinador) |
 | POST | `/:id/asignar` | ✅ | Asignar material a un proyecto (admin/coordinador) |
 | PATCH | `/:id/retiro` | ✅ | Retirar material (admin/coordinador/colaborador) |
-| PATCH | `/:id/en-camino` | ✅ | Marcar/desmarcar material en camino (admin/coordinador) |
+| PUT | `/:id` | ✅ | Editar nombre, descripción y/o umbral de un material (admin/coordinador) |
 
 ### Proyectos — `/api/proyectos`
 

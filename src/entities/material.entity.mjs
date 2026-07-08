@@ -28,11 +28,6 @@ export const Material = new EntitySchema({
             nullable: false,
             name: "umbral_bajo_stock",
         },
-        enCaminoManual: {
-            type: "boolean",
-            default: false,
-            name: "en_camino_manual",
-        },
         actualizadoEn: {
             type: "timestamp",
             createDate: true,

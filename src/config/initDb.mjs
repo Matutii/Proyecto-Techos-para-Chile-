@@ -90,7 +90,6 @@ export async function createInitialData() {
             descripcion: 'Galón de pintura blanca lavable 5L',
             cantidadDisponible: 40,
             umbralBajoStock: 10,
-            enCaminoManual: true,
         },
     ]);
 

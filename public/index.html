@@ -294,11 +294,35 @@
         <button class="btn btn-ghost btn-sm" data-filtro-stock="Disponible">Disponibles</button>
         <button class="btn btn-ghost btn-sm" data-filtro-stock="Bajo_Stock">Bajo stock</button>
         <button class="btn btn-ghost btn-sm" data-filtro-stock="Agotado">Agotados</button>
-        <button class="btn btn-ghost btn-sm" data-filtro-stock="En_camino">En camino</button>
       </div>
 
       <div id="msg-stock"></div>
       <div id="tabla-stock"></div>
+
+      <div id="bloque-editar-material" class="card oculto" style="margin-top:24px;max-width:520px;">
+        <h3 style="margin-bottom:14px;font-size:15px;">Editar material</h3>
+        <div id="msg-editar-material"></div>
+        <form id="form-editar-material">
+          <div class="form-field">
+            <label>Nombre</label>
+            <input type="text" id="ema-nombre" required>
+          </div>
+          <div class="form-field">
+            <label>Descripción</label>
+            <textarea id="ema-desc" rows="2"></textarea>
+          </div>
+          <div class="form-field">
+            <label>Umbral de bajo stock</label>
+            <input type="number" id="ema-umbral" min="0" step="1" required>
+          </div>
+          <button type="submit" class="btn btn-ember">Guardar cambios</button>
+        </form>
+      </div>
+
+      <div id="bloque-historial-material" class="card oculto" style="margin-top:24px;">
+        <h3 id="historial-material-titulo" style="margin-bottom:14px;font-size:15px;"></h3>
+        <div id="tabla-historial-material"></div>
+      </div>
     </section>
 
     <!-- Panel: Vista de stock por proyectos -->
