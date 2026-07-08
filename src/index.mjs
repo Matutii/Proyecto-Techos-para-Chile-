@@ -4,8 +4,15 @@ import { connectDb } from './config/configDb.mjs';
 import { createInitialUsers, createInitialData } from './config/initDb.mjs';
 import app from './app.mjs';
 import { PORT } from './config/configEnv.mjs';
+import fs from 'node:fs';
+import path from 'node:path';
 
 async function main() {
+    const uploadsDir = path.join(process.cwd(), 'uploads');
+    if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+
     await connectDb();
     await createInitialUsers();
     await createInitialData();
