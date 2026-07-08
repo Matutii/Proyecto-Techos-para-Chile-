@@ -148,6 +148,9 @@ function cablearFormularios() {
       cargarStock(this.dataset.filtroStock);
     });
   }
+
+  document.getElementById('filtro-usuarios-rol').addEventListener('change', cargarUsuarios);
+  document.getElementById('filtro-usuarios-estado').addEventListener('change', cargarUsuarios);
 }
 
 // ---------------------------------------------------------------------------
@@ -730,10 +733,18 @@ async function cargarUsuarios() {
   contenedor.innerHTML = 'Cargando...';
 
   try {
-    const usuarios = await api('/usuarios');
+    let usuarios = await api('/usuarios');
+
+    const rolFiltro = document.getElementById('filtro-usuarios-rol').value;
+    const estadoFiltro = document.getElementById('filtro-usuarios-estado').value;
+
+    if (rolFiltro) usuarios = usuarios.filter((u) => u.rol === rolFiltro);
+    if (estadoFiltro) usuarios = usuarios.filter((u) => (estadoFiltro === 'activo' ? u.activo : !u.activo));
+
+    usuarios.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
     if (usuarios.length === 0) {
-      contenedor.innerHTML = '<div class="vacio">No hay usuarios.</div>';
+      contenedor.innerHTML = '<div class="vacio">No hay usuarios para mostrar.</div>';
       return;
     }
 

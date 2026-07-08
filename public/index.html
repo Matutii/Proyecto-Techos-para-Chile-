@@ -192,6 +192,21 @@
 
         <div class="card">
           <h3 style="margin-bottom:14px;font-size:15px;">Cuentas existentes</h3>
+          <div class="toolbar" style="margin-bottom:14px;">
+            <select id="filtro-usuarios-rol">
+              <option value="">Todos los roles</option>
+              <option value="admin">Administrador</option>
+              <option value="coordinador_logistica">Bodega</option>
+              <option value="colaborador">Colaborador</option>
+              <option value="encargado_cuadrillas">Encargado de cuadrillas</option>
+              <option value="visitante">Visitante</option>
+            </select>
+            <select id="filtro-usuarios-estado">
+              <option value="">Todos los estados</option>
+              <option value="activo">Activo</option>
+              <option value="inactivo">Inactivo</option>
+            </select>
+          </div>
           <div id="tabla-usuarios"></div>
         </div>
       </div>
