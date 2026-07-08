@@ -2,6 +2,7 @@ const { AppDataSource } = require('../config/configDb.mjs');
 
 const cuadrillaRepo = () => AppDataSource.getRepository('Cuadrilla');
 const cvRepo = () => AppDataSource.getRepository('CuadrillaVoluntario');
+const voluntarioRepo = () => AppDataSource.getRepository('Voluntario');
 
 function errorConflicto(mensaje) {
   const err = new Error(mensaje);
@@ -129,6 +130,16 @@ async function agregarVoluntario(cuadrillaId, voluntarioId) {
 
   if (cuadrilla.estado === 'Disuelta') {
     throw errorSolicitudInvalida('No se pueden agregar voluntarios a una cuadrilla disuelta');
+  }
+
+  const voluntario = await voluntarioRepo().findOne({ where: { id: Number(voluntarioId) } });
+
+  if (!voluntario) {
+    throw errorNoEncontrado('Voluntario no encontrado');
+  }
+
+  if (voluntario.estado !== 'Activo') {
+    throw errorSolicitudInvalida('Solo se pueden agregar voluntarios con estado Activo');
   }
 
   const existente = await cvRepo().findOne({

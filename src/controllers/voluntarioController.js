@@ -30,8 +30,19 @@ async function obtenerVoluntario(req, res, next) {
   }
 }
 
+async function actualizarEstado(req, res, next) {
+  try {
+    const { estado } = req.body;
+    const voluntario = await voluntarioService.actualizarEstado(req.params.id, estado);
+    res.json(voluntario);
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   inscribirVoluntario,
   listarVoluntarios,
   obtenerVoluntario,
+  actualizarEstado,
 };

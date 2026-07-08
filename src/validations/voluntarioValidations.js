@@ -1,4 +1,4 @@
-const { body, query } = require('express-validator');
+const { body, query, param } = require('express-validator');
 
 const inscribir = [
   body('nombre').isString().trim().isLength({ min: 3, max: 100 }),
@@ -20,4 +20,11 @@ const listarVoluntarios = [
   query('especialidad').optional().isIn(['fuerza_general', 'tecnico', 'jefe_cuadrilla']),
 ];
 
-module.exports = { inscribir, listarVoluntarios };
+const actualizarEstado = [
+  param('id').isInt({ min: 1 }),
+  body('estado')
+    .isIn(['Pendiente', 'Activo', 'Rechazado'])
+    .withMessage('Estado inválido. Use: Pendiente, Activo o Rechazado'),
+];
+
+module.exports = { inscribir, listarVoluntarios, actualizarEstado };

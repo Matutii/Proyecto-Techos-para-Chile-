@@ -550,6 +550,7 @@ async function poblarSelectVoluntariosDisponibles(asignaciones) {
 
     for (let i = 0; i < voluntarios.length; i++) {
       const v = voluntarios[i];
+      if (v.estado !== 'Activo') continue;
       if (idsAsignados.indexOf(v.id) !== -1) continue;
       const opt = document.createElement('option');
       opt.value = v.id;
@@ -645,16 +646,70 @@ async function cargarVoluntarios() {
       return;
     }
 
-    let html = '<table><thead><tr><th>Nombre</th><th>Email</th><th>Estado</th></tr></thead><tbody>';
+    let html = '<table><thead><tr><th>Nombre</th><th>Email</th><th>Estado</th><th></th></tr></thead><tbody>';
     for (let i = 0; i < voluntarios.length; i++) {
       const v = voluntarios[i];
+      const colorBadge = v.estado === 'Activo' ? 'badge-ok' : (v.estado === 'Rechazado' ? 'badge-warn' : 'badge-mid');
+
       html += '<tr><td>' + v.nombre + ' ' + v.apellido + '</td><td>' + v.email + '</td>' +
-        '<td><span class="badge badge-mid">' + v.estado + '</span></td></tr>';
+        '<td><span class="badge ' + colorBadge + '">' + v.estado + '</span></td>' +
+        '<td><button class="btn btn-ghost btn-sm" onclick="verDetalleVoluntario(' + v.id + ')">Ver detalle</button></td></tr>';
     }
     html += '</tbody></table>';
     contenedor.innerHTML = html;
   } catch (err) {
     contenedor.innerHTML = '<div class="msg msg-error">' + err.message + '</div>';
+  }
+}
+
+function nombreDeEspecialidad(especialidad) {
+  if (especialidad === 'fuerza_general') return 'Fuerza general';
+  if (especialidad === 'tecnico') return 'Técnico';
+  if (especialidad === 'jefe_cuadrilla') return 'Jefe de cuadrilla';
+  return especialidad || '—';
+}
+
+async function verDetalleVoluntario(id) {
+  const bloque = document.getElementById('bloque-detalle-voluntario');
+  bloque.classList.remove('oculto');
+  document.getElementById('detalle-voluntario-titulo').textContent = 'Cargando...';
+  document.getElementById('detalle-voluntario-datos').innerHTML = '';
+  document.getElementById('detalle-voluntario-acciones').innerHTML = '';
+
+  try {
+    const v = await api('/voluntarios/' + id);
+
+    document.getElementById('detalle-voluntario-titulo').textContent = v.nombre + ' ' + v.apellido;
+    document.getElementById('detalle-voluntario-datos').innerHTML =
+      '<p><strong>Email:</strong> ' + v.email + '</p>' +
+      '<p><strong>Teléfono:</strong> ' + (v.telefono || '—') + '</p>' +
+      '<p><strong>Especialidad:</strong> ' + nombreDeEspecialidad(v.especialidad) + '</p>' +
+      '<p><strong>Años de experiencia:</strong> ' + v.experienciaAnos + '</p>' +
+      '<p><strong>Habilidades:</strong> ' + (v.habilidades || '—') + '</p>' +
+      '<p><strong>Datos médicos:</strong> ' + v.datosMedicos + '</p>' +
+      '<p><strong>Contacto de emergencia:</strong> ' + v.contactoEmergenciaNombre + ' (' + v.contactoEmergenciaTelefono + ')</p>' +
+      '<p><strong>Inscrito el:</strong> ' + new Date(v.inscritoEn).toLocaleDateString('es-CL') + '</p>';
+
+    let acciones = '';
+    if (v.estado === 'Pendiente') {
+      acciones = '<button class="btn btn-ember" onclick="cambiarEstadoVoluntario(' + v.id + ', \'Activo\')">Aprobar</button> ' +
+        '<button class="btn btn-ghost" onclick="cambiarEstadoVoluntario(' + v.id + ', \'Rechazado\')">Rechazar</button>';
+    } else {
+      acciones = '<span class="sub">Estado actual: ' + v.estado + '</span>';
+    }
+    document.getElementById('detalle-voluntario-acciones').innerHTML = acciones;
+  } catch (err) {
+    mostrarMensaje('msg-detalle-voluntario', err.message, true);
+  }
+}
+
+async function cambiarEstadoVoluntario(id, nuevoEstado) {
+  try {
+    await api('/voluntarios/' + id + '/estado', { method: 'PATCH', body: { estado: nuevoEstado } });
+    cargarVoluntarios();
+    verDetalleVoluntario(id);
+  } catch (err) {
+    mostrarMensaje('msg-detalle-voluntario', err.message, true);
   }
 }
 

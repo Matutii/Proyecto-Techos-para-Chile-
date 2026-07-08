@@ -47,7 +47,7 @@ async function inscribirVoluntario(datos) {
     contactoEmergenciaTelefono: datos.contactoEmergenciaTelefono,
     terminosAceptados: true,
     terminosAceptadosEn: new Date(),
-    estado: 'Activo',
+    estado: 'Pendiente',
     especialidad,
     experienciaAnos,
     habilidades: datos.habilidades || null,
@@ -82,8 +82,28 @@ async function obtenerVoluntario(id) {
   return voluntario;
 }
 
+const ESTADOS_VALIDOS = ['Pendiente', 'Activo', 'Rechazado'];
+
+// Aprueba o rechaza un voluntario pendiente (o revierte su estado)
+async function actualizarEstado(id, estado) {
+  if (!ESTADOS_VALIDOS.includes(estado)) {
+    throw Object.assign(new Error(`Estado inválido. Use: ${ESTADOS_VALIDOS.join(', ')}`), { status: 400 });
+  }
+
+  const voluntario = await voluntarioRepo().findOne({ where: { id: Number(id) } });
+  if (!voluntario) {
+    throw errorNoEncontrado('Voluntario no encontrado');
+  }
+
+  voluntario.estado = estado;
+  await voluntarioRepo().save(voluntario);
+
+  return voluntario;
+}
+
 module.exports = {
   inscribirVoluntario,
   listarVoluntarios,
   obtenerVoluntario,
+  actualizarEstado,
 };
