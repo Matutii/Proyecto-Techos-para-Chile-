@@ -306,7 +306,56 @@
     <section class="panel" id="panel-proyectos">
       <h2>Proyectos</h2>
       <p class="sub">Obras en curso o planificadas.</p>
+
+      <div id="bloque-crear-proyecto" class="card" style="margin-bottom:24px;">
+        <h3 style="margin-bottom:14px;font-size:15px;">Nuevo proyecto</h3>
+        <div id="msg-proyecto"></div>
+        <form id="form-proyecto">
+          <div class="form-field">
+            <label>Nombre</label>
+            <input type="text" id="pr-nombre" required>
+          </div>
+          <div class="form-field">
+            <label>Descripción</label>
+            <textarea id="pr-desc" rows="2"></textarea>
+          </div>
+          <div class="form-field">
+            <label>Estado</label>
+            <select id="pr-estado">
+              <option value="activo">Activo</option>
+              <option value="pausado">Pausado</option>
+              <option value="finalizado">Finalizado</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-ember">Crear proyecto</button>
+        </form>
+      </div>
+
       <div id="tabla-proyectos"></div>
+
+      <div id="bloque-detalle-proyecto" class="card oculto" style="margin-top:24px;max-width:520px;">
+        <h3 style="margin-bottom:14px;font-size:15px;">Editar proyecto</h3>
+        <div id="msg-detalle-proyecto"></div>
+        <form id="form-editar-proyecto">
+          <div class="form-field">
+            <label>Nombre</label>
+            <input type="text" id="epr-nombre" required>
+          </div>
+          <div class="form-field">
+            <label>Descripción</label>
+            <textarea id="epr-desc" rows="2"></textarea>
+          </div>
+          <div class="form-field">
+            <label>Estado</label>
+            <select id="epr-estado">
+              <option value="activo">Activo</option>
+              <option value="pausado">Pausado</option>
+              <option value="finalizado">Finalizado</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-ember">Guardar cambios</button>
+        </form>
+      </div>
     </section>
 
     <!-- Panel: Cuadrillas -->

@@ -136,6 +136,8 @@ function cablearFormularios() {
   document.getElementById('form-material').addEventListener('submit', crearMaterial);
   document.getElementById('form-entrada').addEventListener('submit', registrarEntrada);
   document.getElementById('form-asignar').addEventListener('submit', asignarAProyecto);
+  document.getElementById('form-proyecto').addEventListener('submit', crearProyecto);
+  document.getElementById('form-editar-proyecto').addEventListener('submit', editarProyecto);
   document.getElementById('form-cuadrilla').addEventListener('submit', crearCuadrilla);
   document.getElementById('form-editar-cuadrilla').addEventListener('submit', editarCuadrilla);
   document.getElementById('form-agregar-voluntario').addEventListener('submit', agregarVoluntarioACuadrilla);
@@ -604,30 +606,91 @@ async function agregarVoluntarioACuadrilla(e) {
 }
 
 // ---------------------------------------------------------------------------
-// Proyectos (solo lectura)
+// Proyectos
 // ---------------------------------------------------------------------------
+function nombreDeEstadoProyecto(estado) {
+  if (estado === 'activo') return 'Activo';
+  if (estado === 'pausado') return 'Pausado';
+  if (estado === 'finalizado') return 'Finalizado';
+  return estado;
+}
+
+let proyectosCache = [];
+
 async function cargarProyectos() {
   const contenedor = document.getElementById('tabla-proyectos');
   contenedor.innerHTML = 'Cargando...';
 
   try {
     const proyectos = await api('/proyectos');
+    proyectosCache = proyectos;
 
     if (proyectos.length === 0) {
       contenedor.innerHTML = '<div class="vacio">Todavía no hay proyectos registrados.</div>';
       return;
     }
 
-    let html = '<table><thead><tr><th>Nombre</th><th>Descripción</th><th>Estado</th></tr></thead><tbody>';
+    let html = '<table><thead><tr><th>Nombre</th><th>Descripción</th><th>Estado</th><th></th></tr></thead><tbody>';
     for (let i = 0; i < proyectos.length; i++) {
       const p = proyectos[i];
+      const colorBadge = p.estado === 'activo' ? 'badge-ok' : (p.estado === 'finalizado' ? 'badge-warn' : 'badge-mid');
       html += '<tr><td>' + p.nombre + '</td><td>' + (p.descripcion || '—') + '</td>' +
-        '<td><span class="badge badge-mid">' + p.estado + '</span></td></tr>';
+        '<td><span class="badge ' + colorBadge + '">' + nombreDeEstadoProyecto(p.estado) + '</span></td>' +
+        '<td><button class="btn btn-ghost btn-sm" onclick="verDetalleProyecto(' + p.id + ')">Editar</button></td></tr>';
     }
     html += '</tbody></table>';
     contenedor.innerHTML = html;
   } catch (err) {
     contenedor.innerHTML = '<div class="msg msg-error">' + err.message + '</div>';
+  }
+}
+
+async function crearProyecto(e) {
+  e.preventDefault();
+  const nombre = document.getElementById('pr-nombre').value;
+  const descripcion = document.getElementById('pr-desc').value;
+  const estado = document.getElementById('pr-estado').value;
+
+  try {
+    await api('/proyectos', { method: 'POST', body: { nombre: nombre, descripcion: descripcion, estado: estado } });
+    mostrarMensaje('msg-proyecto', 'Proyecto creado.', false);
+    e.target.reset();
+    cargarProyectos();
+  } catch (err) {
+    mostrarMensaje('msg-proyecto', err.message, true);
+  }
+}
+
+let proyectoSeleccionadoId = null;
+
+function verDetalleProyecto(id) {
+  const proyecto = proyectosCache.find(function (p) { return p.id === id; });
+  if (!proyecto) return;
+
+  proyectoSeleccionadoId = id;
+  document.getElementById('bloque-detalle-proyecto').classList.remove('oculto');
+  document.getElementById('epr-nombre').value = proyecto.nombre;
+  document.getElementById('epr-desc').value = proyecto.descripcion || '';
+  document.getElementById('epr-estado').value = proyecto.estado;
+}
+
+async function editarProyecto(e) {
+  e.preventDefault();
+  if (!proyectoSeleccionadoId) return;
+
+  try {
+    await api('/proyectos/' + proyectoSeleccionadoId, {
+      method: 'PUT',
+      body: {
+        nombre: document.getElementById('epr-nombre').value,
+        descripcion: document.getElementById('epr-desc').value,
+        estado: document.getElementById('epr-estado').value,
+      },
+    });
+    mostrarMensaje('msg-detalle-proyecto', 'Proyecto actualizado.', false);
+    cargarProyectos();
+  } catch (err) {
+    mostrarMensaje('msg-detalle-proyecto', err.message, true);
   }
 }
 

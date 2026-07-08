@@ -19,8 +19,8 @@ export const Proyecto = new EntitySchema({
             nullable: true,
         },
         estado: {
-            type: "varchar",
-            length: 50,
+            type: "enum",
+            enum: ["activo", "pausado", "finalizado"],
             default: "activo",
         },
         creadoEn: {
