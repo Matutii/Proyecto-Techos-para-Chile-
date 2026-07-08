@@ -41,7 +41,6 @@ function cablearTabs() {
       const tab = this.dataset.tab;
       document.getElementById('form-login').classList.toggle('oculto', tab !== 'login');
       document.getElementById('form-registro').classList.toggle('oculto', tab !== 'registro');
-      document.getElementById('form-donar-publico').classList.toggle('oculto', tab !== 'donar');
       document.getElementById('form-voluntario').classList.toggle('oculto', tab !== 'voluntario');
     });
   }
@@ -75,26 +74,6 @@ function cablearFormularios() {
       const data = await api('/auth/registro', { method: 'POST', auth: false, body: { nombre, email, password } });
       Sesion.guardar(data.token, data.usuario);
       entrarAlApp(data.usuario);
-    } catch (err) {
-      mostrarMensaje('msg-auth', err.message, true);
-    }
-  });
-
-  document.getElementById('form-donar-publico').addEventListener('submit', async function (e) {
-    e.preventDefault();
-    const nombre = document.getElementById('don-nombre').value;
-    const email = document.getElementById('don-email').value;
-    const monto = document.getElementById('don-monto').value;
-    const metodo = document.getElementById('don-metodo').value;
-
-    try {
-      await api('/donaciones', {
-        method: 'POST',
-        auth: false,
-        body: { donanteNombre: nombre, donanteEmail: email, monto: Number(monto), metodoPago: metodo },
-      });
-      mostrarMensaje('msg-auth', '¡Gracias por tu donación!', false);
-      e.target.reset();
     } catch (err) {
       mostrarMensaje('msg-auth', err.message, true);
     }
@@ -240,6 +219,7 @@ function mostrarPanel(idPanel, boton) {
   if (idPanel === 'cuadrillas') cargarCuadrillas();
   if (idPanel === 'voluntarios') cargarVoluntarios();
   if (idPanel === 'donaciones') cargarDonaciones();
+  if (idPanel === 'donar') { cargarMisDonaciones(); }
 }
 
 // ---------------------------------------------------------------------------
@@ -872,11 +852,21 @@ async function cargarDonaciones() {
       return;
     }
 
-    let html = '<table><thead><tr><th>Donante</th><th>Monto</th><th>Método</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>';
+    let html = '<table><thead><tr><th>Donante</th><th>Monto</th><th>Método</th><th>Comprobante</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>';
     for (let i = 0; i < donaciones.length; i++) {
       const d = donaciones[i];
       const nombreDonante = d.donanteNombre || 'Anónimo';
       const colorBadge = d.estado === 'confirmada' ? 'badge-ok' : (d.estado === 'rechazada' ? 'badge-warn' : 'badge-mid');
+
+      let comprobanteHtml = '—';
+      if (d.comprobante) {
+        const ext = d.comprobante.split('.').pop().toLowerCase();
+        if (['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(ext)) {
+          comprobanteHtml = '<a href="' + d.comprobante + '" target="_blank"><img src="' + d.comprobante + '" class="comprobante-thumb"></a>';
+        } else {
+          comprobanteHtml = '<a href="' + d.comprobante + '" target="_blank" class="btn btn-ghost btn-sm">Ver PDF</a>';
+        }
+      }
 
       let acciones = '—';
       if (d.estado === 'pendiente') {
@@ -886,6 +876,7 @@ async function cargarDonaciones() {
 
       html += '<tr><td>' + nombreDonante + '</td><td>$' + Number(d.monto).toLocaleString('es-CL') + '</td>' +
         '<td>' + (d.metodoPago || '—') + '</td>' +
+        '<td>' + comprobanteHtml + '</td>' +
         '<td><span class="badge ' + colorBadge + '">' + d.estado + '</span></td>' +
         '<td>' + acciones + '</td></tr>';
     }
@@ -907,18 +898,53 @@ async function cambiarEstadoDonacion(id, nuevoEstado) {
   }
 }
 
+async function cargarMisDonaciones() {
+  const contenedor = document.getElementById('tabla-mis-donaciones');
+  contenedor.innerHTML = 'Cargando...';
+
+  try {
+    const donaciones = await api('/donaciones/mis-donaciones');
+
+    if (donaciones.length === 0) {
+      contenedor.innerHTML = '<div class="vacio">Aún no has realizado donaciones.</div>';
+      return;
+    }
+
+    let html = '<table><thead><tr><th>Monto</th><th>Método</th><th>Estado</th><th>Fecha</th></tr></thead><tbody>';
+    for (let i = 0; i < donaciones.length; i++) {
+      const d = donaciones[i];
+      const colorBadge = d.estado === 'confirmada' ? 'badge-ok' : (d.estado === 'rechazada' ? 'badge-warn' : 'badge-mid');
+      let textoEstado = d.estado === 'confirmada' ? 'Aceptada' : (d.estado === 'rechazada' ? 'Rechazada' : 'Pendiente');
+      html += '<tr><td>$' + Number(d.monto).toLocaleString('es-CL') + '</td>' +
+        '<td>' + (d.metodoPago || '—') + '</td>' +
+        '<td><span class="badge ' + colorBadge + '">' + textoEstado + '</span></td>' +
+        '<td>' + new Date(d.creadoEn).toLocaleDateString('es-CL') + '</td></tr>';
+    }
+    html += '</tbody></table>';
+    contenedor.innerHTML = html;
+  } catch (err) {
+    contenedor.innerHTML = '<div class="msg msg-error">' + err.message + '</div>';
+  }
+}
+
 async function donarDesdeApp(e) {
   e.preventDefault();
   const monto = document.getElementById('donapp-monto').value;
   const metodo = document.getElementById('donapp-metodo').value;
   const esAnonimo = document.getElementById('donapp-anonimo').checked;
-  const body = { monto: Number(monto), metodoPago: metodo };
-  if (!esAnonimo) body.donanteNombre = Sesion.usuario().nombre;
+  const comprobante = document.getElementById('donapp-comprobante').files[0];
+
+  const formData = new FormData();
+  formData.append('monto', Number(monto));
+  formData.append('metodoPago', metodo);
+  if (!esAnonimo) formData.append('donanteNombre', Sesion.usuario().nombre);
+  if (comprobante) formData.append('comprobante', comprobante);
 
   try {
-    await api('/donaciones', { method: 'POST', body: body });
-    mostrarMensaje('msg-donar-app', '¡Gracias por tu donación!', false);
+    await api('/donaciones', { method: 'POST', body: formData, formData: true });
+    mostrarMensaje('msg-donar-app', 'Donación registrada. Espera la confirmación del administrador.', false);
     e.target.reset();
+    cargarMisDonaciones();
   } catch (err) {
     mostrarMensaje('msg-donar-app', err.message, true);
   }

@@ -20,13 +20,15 @@ const Sesion = {
 
 // Hace una petición al backend (agregando el token si el usuario está logueado)
 // options.method: 'GET', 'POST', 'PATCH', etc.
-// options.body: objeto que se manda como JSON
+// options.body: objeto que se manda como JSON, o FormData si options.formData es true
 // options.auth: si es false, no manda el token aunque exista (para login/registro/donar público)
+// options.formData: si es true, envía como multipart/form-data en vez de JSON
 async function api(ruta, options) {
   options = options || {};
   const metodo = options.method || 'GET';
 
-  const headers = { 'Content-Type': 'application/json' };
+  const headers = {};
+  if (!options.formData) headers['Content-Type'] = 'application/json';
   if (options.auth !== false) {
     const token = Sesion.token();
     if (token) headers.Authorization = 'Bearer ' + token;
@@ -35,7 +37,7 @@ async function api(ruta, options) {
   const respuesta = await fetch('/api' + ruta, {
     method: metodo,
     headers: headers,
-    body: options.body ? JSON.stringify(options.body) : undefined,
+    body: options.body ? (options.formData ? options.body : JSON.stringify(options.body)) : undefined,
   });
 
   let datos = null;

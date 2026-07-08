@@ -24,3 +24,6 @@ Thumbs.db
 # Build
 dist/
 build/
+
+# Archivos subidos (comprobantes de donaciones)
+uploads/

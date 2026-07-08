@@ -32,8 +32,9 @@ if (process.env.NODE_ENV !== 'test') {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Frontend estático (login, registro y dashboards por rol)
+// Archivos estáticos: frontend y comprobantes de donaciones
 app.use(express.static(publicDir));
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/usuarios', usuarioRoutes);

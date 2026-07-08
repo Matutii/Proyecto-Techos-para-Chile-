@@ -39,6 +39,11 @@ export const Donacion = new EntitySchema({
             enum: ["pendiente", "confirmada", "rechazada"],
             default: "pendiente",
         },
+        comprobante: {
+            type: "varchar",
+            length: 500,
+            nullable: true,
+        },
         usuarioId: {
             type: "int",
             nullable: true,

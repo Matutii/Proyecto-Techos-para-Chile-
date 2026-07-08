@@ -4,10 +4,21 @@ const donacionRepo = () => AppDataSource.getRepository('Donacion');
 
 const ESTADOS_VALIDOS = ['pendiente', 'confirmada', 'rechazada'];
 
-// Crea una nueva donación con estado 'pendiente'
 async function crearDonacion(datos) {
   if (!datos.monto || Number(datos.monto) <= 0) {
     throw Object.assign(new Error('El monto debe ser mayor a 0'), { status: 400 });
+  }
+
+  if (datos.usuarioId) {
+    const pendiente = await donacionRepo().findOne({
+      where: { usuarioId: datos.usuarioId, estado: 'pendiente' },
+    });
+    if (pendiente) {
+      throw Object.assign(
+        new Error('Ya tienes una donación pendiente de revisión. Debes esperar a que sea aceptada o rechazada antes de hacer otra.'),
+        { status: 400 }
+      );
+    }
   }
 
   const donacion = await donacionRepo().save({
@@ -16,13 +27,13 @@ async function crearDonacion(datos) {
     monto:         Number(datos.monto),
     metodoPago:    datos.metodoPago    || null,
     usuarioId:     datos.usuarioId     || null,
+    comprobante:   datos.comprobante   || null,
     estado:        'pendiente',
   });
 
   return donacion;
 }
 
-// Lista donaciones con filtros opcionales por estado o método de pago
 async function listarDonaciones(filtros = {}) {
   const where = {};
 
@@ -37,7 +48,6 @@ async function listarDonaciones(filtros = {}) {
   });
 }
 
-// Actualiza el estado de una donación (aceptar = confirmada, rechazar = rechazada)
 async function actualizarEstado(id, estado) {
   if (!ESTADOS_VALIDOS.includes(estado)) {
     throw Object.assign(new Error(`Estado inválido. Use: ${ESTADOS_VALIDOS.join(', ')}`), { status: 400 });
@@ -54,7 +64,13 @@ async function actualizarEstado(id, estado) {
   return donacion;
 }
 
-// Retorna la lista estática de métodos de pago disponibles
+async function listarDonacionesPorUsuario(usuarioId) {
+  return await donacionRepo().find({
+    where: { usuarioId },
+    order: { creadoEn: 'DESC' },
+  });
+}
+
 async function obtenerInfoMetodosPago() {
   return [
     { id: 'transferencia', nombre: 'Transferencia bancaria' },
@@ -67,5 +83,6 @@ module.exports = {
   crearDonacion,
   listarDonaciones,
   actualizarEstado,
+  listarDonacionesPorUsuario,
   obtenerInfoMetodosPago,
 };
