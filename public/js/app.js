@@ -329,8 +329,9 @@ async function retirarMaterial(id) {
   try {
     await api('/stock/' + id + '/retiro', { method: 'PATCH', body: { cantidad: Number(cantidad), observacion: 'Retiro desde la plataforma' } });
     cargarStock('');
+    mostrarMensaje('msg-stock', 'Retiro registrado.', false);
   } catch (err) {
-    mostrarMensaje('msg-material', err.message, true);
+    mostrarMensaje('msg-stock', err.message, true);
   }
 }
 
@@ -339,7 +340,7 @@ async function toggleEnCamino(id, enCaminoManual) {
     await api('/stock/' + id + '/en-camino', { method: 'PATCH', body: { enCaminoManual: enCaminoManual } });
     cargarStock('');
   } catch (err) {
-    mostrarMensaje('msg-material', err.message, true);
+    mostrarMensaje('msg-stock', err.message, true);
   }
 }
 
