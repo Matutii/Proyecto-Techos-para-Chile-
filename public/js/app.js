@@ -853,6 +853,20 @@ async function cargarDonaciones() {
   try {
     const donaciones = await api('/donaciones');
 
+    let totalConfirmado = 0;
+    let cantidadPendientes = 0;
+    let montoPendiente = 0;
+    for (let i = 0; i < donaciones.length; i++) {
+      if (donaciones[i].estado === 'confirmada') totalConfirmado += Number(donaciones[i].monto);
+      if (donaciones[i].estado === 'pendiente') {
+        cantidadPendientes++;
+        montoPendiente += Number(donaciones[i].monto);
+      }
+    }
+    document.getElementById('don-total-confirmado').textContent = '$' + totalConfirmado.toLocaleString('es-CL');
+    document.getElementById('don-total-pendiente').textContent =
+      cantidadPendientes + (cantidadPendientes === 1 ? ' donación' : ' donaciones') + ' ($' + montoPendiente.toLocaleString('es-CL') + ')';
+
     if (donaciones.length === 0) {
       contenedor.innerHTML = '<div class="vacio">Todavía no se han registrado donaciones.</div>';
       return;
