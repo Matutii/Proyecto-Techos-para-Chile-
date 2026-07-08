@@ -8,13 +8,47 @@
   Sistema de gestión operacional para coordinación de voluntarios, materiales y donaciones en terreno.
 </p>
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white" alt="Node.js" />
+  <img src="https://img.shields.io/badge/Express-4.x-000000?logo=express&logoColor=white" alt="Express" />
+  <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/TypeORM-FE0803?logo=typeorm&logoColor=white" alt="TypeORM" />
+  <img src="https://img.shields.io/badge/JWT-auth-000000?logo=jsonwebtokens&logoColor=white" alt="JWT" />
+  <img src="https://img.shields.io/badge/JavaScript-vanilla-F7DF1E?logo=javascript&logoColor=black" alt="JavaScript" />
+  <img src="https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white" alt="HTML5" />
+  <img src="https://img.shields.io/badge/CSS3-1572B6?logo=css&logoColor=white" alt="CSS3" />
+</p>
+
 ---
 
 ## Descripción
 
-Sistema de gestión operacional para **Techos Para Chile**, organización que coordina cuadrillas de voluntarios en proyectos de construcción social. Centraliza la gestión de stock de materiales, inscripción de voluntarios, autenticación por roles, registro de donaciones y asignación de cuadrillas.
+Sistema de gestión operacional para **Techos Para Chile**, organización que coordina cuadrillas de voluntarios en proyectos de construcción social. Centraliza la gestión de stock de materiales, inscripción y aprobación de voluntarios, autenticación por roles, registro de donaciones y asignación de cuadrillas.
 
 Es una app monolítica: Express sirve tanto la API (`/api/*`) como el frontend estático (`public/`) desde el mismo proceso y puerto.
+
+---
+
+## Funcionalidades
+
+- **Bodega**: alta de materiales, entradas de stock, asignación a proyectos, retiros en terreno y estado calculado automáticamente (Disponible / Bajo stock / Agotado / En camino), con historial completo de movimientos.
+- **Proyectos**: creación y edición de obras, con vista de stock asignado por proyecto.
+- **Voluntarios**: inscripción pública con ficha completa (datos médicos, contacto de emergencia, experiencia), clasificación automática de especialidad y flujo de aprobación/rechazo.
+- **Cuadrillas**: creación de equipos de trabajo y asignación de voluntarios aprobados.
+- **Donaciones**: registro público (anónimo o con nombre) y gestión de confirmación/rechazo.
+- **Usuarios**: cuentas con roles y permisos diferenciados, activación/desactivación y filtros por rol y estado.
+
+---
+
+## Roles y permisos
+
+| Rol | Puede |
+|---|---|
+| `admin` | Todo: usuarios, bodega, proyectos, cuadrillas, voluntarios y donaciones |
+| `coordinador_logistica` (Bodega) | Gestionar stock, proyectos, cuadrillas y donaciones |
+| `encargado_cuadrillas` | Gestionar cuadrillas y aprobar/rechazar voluntarios |
+| `colaborador` | Ver bodega y retirar materiales en terreno |
+| `visitante` | Donar desde su cuenta |
 
 ---
 
@@ -32,25 +66,9 @@ Es una app monolítica: Express sirve tanto la API (`/api/*`) como el frontend e
 
 ---
 
-## Avance actual
-
-- ✅ Entidades creadas desde el MER
-- ✅ Servicios, controladores y rutas implementados
-- ✅ Autenticación JWT + bcrypt con permisos por rol
-- ✅ Seed automático con datos de prueba
-- ✅ Base de datos conectada y tablas sincronizadas
-
----
-
-## Requisitos
-
-- Node.js 18 o superior
-- PostgreSQL 16
-- npm 9+
-
----
-
 ## Instalación
+
+Requisitos: Node.js 18+, PostgreSQL 16, npm 9+.
 
 ```bash
 git clone https://github.com/Matutii/Proyecto-Techos-para-Chile-.git
@@ -63,9 +81,7 @@ npm run dev
 
 La app completa (API + frontend) queda disponible en `http://localhost:3000`.
 
----
-
-## Variables de entorno
+### Variables de entorno
 
 ```env
 PORT=3000
@@ -81,9 +97,7 @@ JWT_SECRET=tu_clave_secreta_minimo_32_caracteres
 JWT_EXPIRES_IN=8h
 ```
 
----
-
-## Usuarios de prueba
+### Usuarios de prueba
 
 El seed crea automáticamente estos usuarios al iniciar la app:
 
@@ -119,7 +133,7 @@ Además, cualquiera puede crear una cuenta propia con rol `visitante` desde `POS
 | Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
 | GET | `/` | ✅ | Listar materiales (cantidad, umbral, estado calculado) |
-| GET | `/proyectos` | ✅ | Vista agrupada por proyecto |
+| GET | `/proyectos` | ✅ | Detalle de materiales asignados por proyecto |
 | GET | `/:id` | ✅ | Obtener material + historial |
 | POST | `/` | ✅ | Crear material (admin/coordinador) |
 | POST | `/:id/entrada` | ✅ | Registrar entrada de stock (admin/coordinador) |
@@ -127,22 +141,22 @@ Además, cualquiera puede crear una cuenta propia con rol `visitante` desde `POS
 | PATCH | `/:id/retiro` | ✅ | Retirar material (admin/coordinador/colaborador) |
 | PATCH | `/:id/en-camino` | ✅ | Marcar/desmarcar material en camino (admin/coordinador) |
 
+### Proyectos — `/api/proyectos`
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| GET | `/` | ✅ | Listar proyectos |
+| POST | `/` | ✅ | Crear proyecto (admin/coordinador) |
+| PUT | `/:id` | ✅ | Editar nombre, descripción y/o estado (admin/coordinador) |
+
 ### Voluntarios — `/api/voluntarios`
 
 | Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
-| POST | `/inscripcion` | ❌ | Inscribir voluntario |
+| POST | `/inscripcion` | ❌ | Inscribir voluntario (queda en estado `Pendiente`) |
 | GET | `/` | ✅ | Listar voluntarios |
-| GET | `/:id` | ✅ | Obtener voluntario por ID |
-
-### Donaciones — `/api/donaciones`
-
-| Método | Ruta | Auth | Descripción |
-|--------|------|------|-------------|
-| GET | `/metodos-pago` | ❌ | Métodos de pago disponibles |
-| POST | `/` | opcional | Registrar una donación (si hay token, queda vinculada al usuario) |
-| GET | `/` | ✅ | Listar donaciones (admin/coordinador) |
-| PATCH | `/:id/estado` | ✅ | Aceptar o rechazar una donación (admin/coordinador) |
+| GET | `/:id` | ✅ | Obtener ficha completa de un voluntario |
+| PATCH | `/:id/estado` | ✅ | Aprobar o rechazar voluntario (admin/encargado_cuadrillas) |
 
 ### Cuadrillas — `/api/cuadrillas`
 
@@ -153,15 +167,16 @@ Además, cualquiera puede crear una cuenta propia con rol `visitante` desde `POS
 | POST | `/` | ✅ | Crear cuadrilla (admin/coordinador/encargado_cuadrillas) |
 | PUT | `/:id` | ✅ | Actualizar cuadrilla (admin/coordinador/encargado_cuadrillas) |
 | DELETE | `/:id` | ✅ | Eliminar cuadrilla (solo admin) |
-| POST | `/:id/voluntarios` | ✅ | Agregar voluntario a cuadrilla |
+| POST | `/:id/voluntarios` | ✅ | Agregar voluntario aprobado a una cuadrilla |
 
-### Proyectos — `/api/proyectos`
+### Donaciones — `/api/donaciones`
 
 | Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
-| GET | `/` | ✅ | Listar proyectos |
-
----
+| GET | `/metodos-pago` | ❌ | Métodos de pago disponibles |
+| POST | `/` | opcional | Registrar una donación (si hay token, queda vinculada al usuario) |
+| GET | `/` | ✅ | Listar donaciones (admin/coordinador) |
+| PATCH | `/:id/estado` | ✅ | Aceptar o rechazar una donación (admin/coordinador) |
 
 ### Health
 
