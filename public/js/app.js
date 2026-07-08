@@ -420,13 +420,32 @@ async function cargarStockPorProyectos() {
       return;
     }
 
-    let html = '<table><thead><tr><th>Proyecto</th><th>Disponibles</th><th>Bajo stock</th><th>Agotados</th><th>En camino</th></tr></thead><tbody>';
+    let html = '';
     for (let i = 0; i < proyectos.length; i++) {
       const p = proyectos[i];
-      html += '<tr><td>' + p.nombre + '</td><td>' + p.disponibles + '</td><td>' + p.bajoStock + '</td>' +
-        '<td>' + p.agotados + '</td><td>' + p.enCamino + '</td></tr>';
+
+      html += '<details class="card" style="margin-bottom:12px;"><summary style="cursor:pointer;font-weight:600;">' +
+        p.nombre + ' <span class="sub" style="font-weight:400;">(' + p.materiales.length + ' material' + (p.materiales.length === 1 ? '' : 'es') + ' asignado' + (p.materiales.length === 1 ? '' : 's') + ')</span></summary>';
+
+      if (p.materiales.length === 0) {
+        html += '<div class="vacio">Sin materiales asignados.</div>';
+      } else {
+        html += '<table style="margin-top:10px;"><thead><tr><th>Material</th><th>Cantidad asignada</th><th>Estado</th></tr></thead><tbody>';
+        for (let j = 0; j < p.materiales.length; j++) {
+          const m = p.materiales[j];
+          let colorBadge = 'badge-mid';
+          if (m.estado === 'Disponible') colorBadge = 'badge-ok';
+          if (m.estado === 'Agotado') colorBadge = 'badge-warn';
+          if (m.estado === 'Bajo_Stock') colorBadge = 'badge-yellow';
+
+          html += '<tr><td>' + m.nombre + '</td><td>' + m.cantidadAsignada + '</td>' +
+            '<td><span class="badge ' + colorBadge + '">' + m.estado.replace('_', ' ') + '</span></td></tr>';
+        }
+        html += '</tbody></table>';
+      }
+
+      html += '</details>';
     }
-    html += '</tbody></table>';
     contenedor.innerHTML = html;
   } catch (err) {
     contenedor.innerHTML = '<div class="msg msg-error">' + err.message + '</div>';

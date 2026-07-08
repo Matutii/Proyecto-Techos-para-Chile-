@@ -217,23 +217,25 @@ async function actualizarEnCamino(materialId, enCaminoManual) {
   return await obtenerMaterial(material.id);
 }
 
-// Devuelve, por cada proyecto, el conteo de materiales asignados según su estado actual
+// Devuelve, por cada proyecto, el detalle de materiales asignados (con cantidad y estado)
 async function vistaPorProyectos() {
   const proyectos = await proyectoRepo().find({ order: { id: 'ASC' } });
   const asignaciones = await asignacionRepo().find({ relations: ['material'] });
 
   return proyectos.map((p) => {
-    const estadosDelProyecto = asignaciones
+    const materiales = asignaciones
       .filter((a) => a.proyectoId === p.id)
-      .map((a) => calcularEstado(a.material.cantidadDisponible, a.material.umbralBajoStock, a.material.enCaminoManual));
+      .map((a) => ({
+        materialId: a.material.id,
+        nombre: a.material.nombre,
+        cantidadAsignada: a.cantidadAsignada,
+        estado: calcularEstado(a.material.cantidadDisponible, a.material.umbralBajoStock, a.material.enCaminoManual),
+      }));
 
     return {
       id: p.id,
       nombre: p.nombre,
-      disponibles: estadosDelProyecto.filter((e) => e === 'Disponible').length,
-      bajoStock: estadosDelProyecto.filter((e) => e === 'Bajo_Stock').length,
-      agotados: estadosDelProyecto.filter((e) => e === 'Agotado').length,
-      enCamino: estadosDelProyecto.filter((e) => e === 'En_camino').length,
+      materiales,
     };
   });
 }
