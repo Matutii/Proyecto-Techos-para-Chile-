@@ -16,7 +16,7 @@ const crearDonacion = [
 
   body('monto')
     .notEmpty().withMessage('El monto es requerido')
-    .isFloat({ min: 0.01 }).withMessage('El monto debe ser mayor a 0'),
+    .isFloat({ min: 1000 }).withMessage('El monto mínimo es de $1.000 CLP'),
 
   body('metodoPago')
     .optional()
