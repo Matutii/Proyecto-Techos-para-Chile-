@@ -1,3 +1,4 @@
+// Cuántas unidades de un material están asignadas a cada proyecto (par único material-proyecto)
 import { EntitySchema } from "typeorm";
 
 export const AsignacionMaterial = new EntitySchema({

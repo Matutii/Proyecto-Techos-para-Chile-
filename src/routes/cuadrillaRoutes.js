@@ -1,3 +1,5 @@
+// Rutas de cuadrillas. Lectura autenticada; gestión para admin,
+// coordinador de bodega y encargado de cuadrillas; eliminar solo admin.
 const router = require('express').Router();
 const { validationResult } = require('express-validator');
 const verificarToken = require('../middlewares/auth');

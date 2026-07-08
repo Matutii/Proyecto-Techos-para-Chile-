@@ -1,3 +1,4 @@
+// Personas inscritas para trabajar en terreno; parten Pendiente hasta ser aprobadas
 import { EntitySchema } from "typeorm";
 
 export const Voluntario = new EntitySchema({

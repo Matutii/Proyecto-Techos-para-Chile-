@@ -1,5 +1,6 @@
 const proyectoService = require('../services/proyecto.service');
 
+// GET /api/proyectos
 async function listarProyectos(req, res, next) {
   try {
     const proyectos = await proyectoService.listarProyectos();
@@ -9,6 +10,7 @@ async function listarProyectos(req, res, next) {
   }
 }
 
+// POST /api/proyectos (admin/coordinador)
 async function crearProyecto(req, res, next) {
   try {
     const proyecto = await proyectoService.crearProyecto(req.body);
@@ -18,6 +20,7 @@ async function crearProyecto(req, res, next) {
   }
 }
 
+// PUT /api/proyectos/:id (admin/coordinador)
 async function actualizarProyecto(req, res, next) {
   try {
     const proyecto = await proyectoService.actualizarProyecto(req.params.id, req.body);

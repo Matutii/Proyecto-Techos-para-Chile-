@@ -1,3 +1,4 @@
+// Punto de entrada: conecta la BD, siembra datos iniciales y levanta el servidor Express
 import './config/configEnv.mjs';
 import { connectDb } from './config/configDb.mjs';
 import { createInitialUsers, createInitialData } from './config/initDb.mjs';

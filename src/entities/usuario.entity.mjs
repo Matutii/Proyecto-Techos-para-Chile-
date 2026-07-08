@@ -1,3 +1,4 @@
+// Cuentas de acceso al sistema; el rol define qué puede hacer cada una
 import { EntitySchema } from "typeorm";
 
 export const Usuario = new EntitySchema({

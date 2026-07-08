@@ -10,6 +10,8 @@ import { Donacion } from '../entities/donacion.entity.mjs';
 import { Cuadrilla } from '../entities/cuadrilla.entity.mjs';
 import { CuadrillaVoluntario } from '../entities/cuadrillaVoluntario.entity.mjs';
 
+// DataSource de TypeORM con todas las entidades registradas.
+// synchronize: true crea/actualiza las tablas según las entidades (solo apto para desarrollo).
 export const AppDataSource = new DataSource({
     type: 'postgres',
     host: HOST,

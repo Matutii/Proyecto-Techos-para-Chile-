@@ -1,3 +1,4 @@
+// Rutas de proyectos. Lectura autenticada; crear/editar solo bodega y admin.
 const router = require('express').Router();
 const { validationResult } = require('express-validator');
 const verificarToken = require('../middlewares/auth');

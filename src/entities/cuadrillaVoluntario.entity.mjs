@@ -1,3 +1,4 @@
+// Relación voluntario-cuadrilla con fechas de inicio/fin de la participación
 import { EntitySchema } from "typeorm";
 
 export const CuadrillaVoluntario = new EntitySchema({

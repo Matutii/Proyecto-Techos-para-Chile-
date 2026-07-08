@@ -1,3 +1,5 @@
+// Configuración de la app Express: middlewares globales, rutas de la API,
+// frontend estático y manejo centralizado de errores.
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -50,10 +52,13 @@ app.get(/^(?!\/api).*/, (req, res) => {
     res.sendFile(path.join(publicDir, 'index.html'));
 });
 
+// 404 para rutas /api/* que no matchearon ningún router
 app.use((req, res) => {
     res.status(404).json({ error: 'Ruta no encontrada' });
 });
 
+// Manejador central de errores: los servicios lanzan Error con err.status
+// y aquí se traduce a respuesta JSON (500 si no se especificó status)
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(err.status || 500).json({

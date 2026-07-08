@@ -1,3 +1,4 @@
+// Reglas de validación para inscripción y gestión de voluntarios
 const { body, query, param } = require('express-validator');
 
 const inscribir = [

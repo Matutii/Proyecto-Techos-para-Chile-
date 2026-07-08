@@ -5,6 +5,7 @@ const usuarioRepo = () => AppDataSource.getRepository('Usuario');
 
 const ROLES_VALIDOS = ['admin', 'coordinador_logistica', 'colaborador', 'encargado_cuadrillas', 'visitante'];
 
+// Helper para lanzar errores con el status HTTP que espera el manejador central
 function errorNoEncontrado(mensaje) {
   const err = new Error(mensaje);
   err.status = 404;

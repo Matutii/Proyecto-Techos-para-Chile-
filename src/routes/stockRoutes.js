@@ -1,3 +1,5 @@
+// Rutas de stock/bodega. Lectura para cualquier usuario autenticado;
+// escritura solo para bodega (salvo el retiro, que incluye al colaborador).
 const router = require('express').Router();
 const { validationResult } = require('express-validator');
 const verificarToken = require('../middlewares/auth');

@@ -1,3 +1,4 @@
+// Aportes recibidos; si el donante estaba logueado queda vinculado por usuarioId
 import { EntitySchema } from "typeorm";
 
 export const Donacion = new EntitySchema({

@@ -1,3 +1,4 @@
+// Reglas de validación (express-validator) para login y registro público
 const {body}= require('express-validator');
 const login= [
     body('email').isEmail().withMessage('Debe ser un email valido').normalizeEmail(),

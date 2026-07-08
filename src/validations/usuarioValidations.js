@@ -1,3 +1,4 @@
+// Reglas de validación para la gestión de cuentas (solo admin)
 const { body, param } = require('express-validator');
 const { ROLES_VALIDOS } = require('../services/usuario.service');
 

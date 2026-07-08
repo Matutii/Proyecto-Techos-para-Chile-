@@ -2,6 +2,7 @@ const { AppDataSource } = require('../config/configDb.mjs');
 
 const voluntarioRepo = () => AppDataSource.getRepository('Voluntario');
 
+// Helper para lanzar errores con el status HTTP que espera el manejador central
 function errorConflicto(mensaje) {
   const err = new Error(mensaje);
   err.status = 409;

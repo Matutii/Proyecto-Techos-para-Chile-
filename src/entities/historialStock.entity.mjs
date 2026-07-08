@@ -1,3 +1,4 @@
+// Bitácora de movimientos de stock: entradas, asignaciones y retiros, con usuario responsable
 import { EntitySchema } from "typeorm";
 
 export const HistorialStock = new EntitySchema({

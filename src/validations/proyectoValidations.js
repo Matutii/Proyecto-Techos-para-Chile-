@@ -1,3 +1,4 @@
+// Reglas de validación para crear y editar proyectos
 const { body, param } = require('express-validator');
 
 const crearProyecto = [

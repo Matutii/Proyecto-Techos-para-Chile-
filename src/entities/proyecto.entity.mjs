@@ -1,3 +1,4 @@
+// Obras en curso o planificadas a las que se asignan materiales y cuadrillas
 import { EntitySchema } from "typeorm";
 
 export const Proyecto = new EntitySchema({

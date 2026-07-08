@@ -1,3 +1,4 @@
+// Reglas de validación para el registro y gestión de donaciones
 const { body, query, param } = require('express-validator');
 
 const crearDonacion = [

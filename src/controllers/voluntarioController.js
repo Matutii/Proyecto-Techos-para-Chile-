@@ -1,5 +1,7 @@
 const voluntarioService = require('../services/voluntario.service');
 
+// POST /api/voluntarios/inscripcion (público)
+// Inscribe un voluntario; queda Pendiente hasta que lo apruebe un encargado
 async function inscribirVoluntario(req, res, next) {
   try {
     const voluntario = await voluntarioService.inscribirVoluntario(req.body);
@@ -9,6 +11,8 @@ async function inscribirVoluntario(req, res, next) {
   }
 }
 
+// GET /api/voluntarios
+// Admite filtros ?estado= y ?especialidad=
 async function listarVoluntarios(req, res, next) {
   try {
     const voluntarios = await voluntarioService.listarVoluntarios({
@@ -21,6 +25,7 @@ async function listarVoluntarios(req, res, next) {
   }
 }
 
+// GET /api/voluntarios/:id
 async function obtenerVoluntario(req, res, next) {
   try {
     const voluntario = await voluntarioService.obtenerVoluntario(req.params.id);
@@ -30,6 +35,8 @@ async function obtenerVoluntario(req, res, next) {
   }
 }
 
+// PATCH /api/voluntarios/:id/estado (admin/encargado_cuadrillas)
+// Aprueba (Activo) o rechaza (Rechazado) a un voluntario
 async function actualizarEstado(req, res, next) {
   try {
     const { estado } = req.body;

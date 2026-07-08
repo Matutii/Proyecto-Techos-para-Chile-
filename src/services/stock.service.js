@@ -6,6 +6,7 @@ const historialRepo = () => AppDataSource.getRepository('HistorialStock');
 const proyectoRepo = () => AppDataSource.getRepository('Proyecto');
 const asignacionRepo = () => AppDataSource.getRepository('AsignacionMaterial');
 
+// Helper para lanzar errores con el status HTTP que espera el manejador central
 function errorNoEncontrado(mensaje) {
   const err = new Error(mensaje);
   err.status = 404;

@@ -1,3 +1,4 @@
+// Reglas de validación para cuadrillas y sus integrantes
 const { body, query, param } = require('express-validator');
 
 const crearCuadrilla = [

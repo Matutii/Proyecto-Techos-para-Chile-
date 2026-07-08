@@ -1,3 +1,4 @@
+// Equipos de trabajo; pueden tener jefe (voluntario) y proyecto asignado
 import { EntitySchema } from "typeorm";
 
 export const Cuadrilla = new EntitySchema({

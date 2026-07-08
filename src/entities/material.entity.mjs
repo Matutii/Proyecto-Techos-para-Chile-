@@ -1,3 +1,4 @@
+// Materiales de bodega; el estado se calcula desde cantidad y umbral (no se guarda)
 import { EntitySchema } from "typeorm";
 
 export const Material = new EntitySchema({

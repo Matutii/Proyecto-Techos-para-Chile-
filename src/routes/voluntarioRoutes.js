@@ -1,3 +1,5 @@
+// Rutas de voluntarios. La inscripción es pública; el resto requiere token
+// y aprobar/rechazar queda limitado a admin y encargado de cuadrillas.
 const router = require('express').Router();
 const { validationResult } = require('express-validator');
 const verificarToken = require('../middlewares/auth');

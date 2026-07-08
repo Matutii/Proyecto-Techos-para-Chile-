@@ -1,3 +1,4 @@
+// Reglas de validación para materiales y movimientos de stock
 const { body, query, param } = require('express-validator');
 
 const crearMaterial = [

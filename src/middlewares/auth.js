@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');
 const { AppDataSource } = require('../config/configDb.mjs');
 
+// Exige un token JWT válido (header "Authorization: Bearer <token>").
+// Si es válido y el usuario sigue activo, deja el usuario completo en req.usuario;
+// si no, corta la request con 401.
 async function verificarToken(req, res, next) {
   const header = req.headers.authorization;
   if (!header || !header.startsWith('Bearer ')) {

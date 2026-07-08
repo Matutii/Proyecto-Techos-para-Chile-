@@ -1,3 +1,4 @@
+// Carga el .env y expone las variables de entorno con valores por defecto de desarrollo
 import dotenv from 'dotenv';
 
 dotenv.config();

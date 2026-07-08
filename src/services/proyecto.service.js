@@ -2,6 +2,7 @@ const { AppDataSource } = require('../config/configDb.mjs');
 
 const proyectoRepo = () => AppDataSource.getRepository('Proyecto');
 
+// Helper para lanzar errores con el status HTTP que espera el manejador central
 function errorNoEncontrado(mensaje) {
   const err = new Error(mensaje);
   err.status = 404;

@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import { AppDataSource } from './configDb.mjs';
 
+// Seed inicial: crea las cuentas base (admin y bodega) solo si la tabla está vacía
 export async function createInitialUsers() {
     const repo = AppDataSource.getRepository('Usuario');
     const count = await repo.count();
@@ -30,6 +31,8 @@ export async function createInitialUsers() {
     console.log('Usuarios iniciales creados correctamente');
 }
 
+// Seed de datos de prueba: proyectos, materiales, asignaciones, voluntarios y
+// donaciones de ejemplo. Solo corre si no hay proyectos en la BD.
 export async function createInitialData() {
     const proyectoRepo = AppDataSource.getRepository('Proyecto');
     const materialRepo = AppDataSource.getRepository('Material');
