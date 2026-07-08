@@ -121,6 +121,7 @@ function cablearFormularios() {
   document.getElementById('form-cuadrilla').addEventListener('submit', crearCuadrilla);
   document.getElementById('form-editar-cuadrilla').addEventListener('submit', editarCuadrilla);
   document.getElementById('form-agregar-voluntario').addEventListener('submit', agregarVoluntarioACuadrilla);
+  document.getElementById('btn-disolver-cuadrilla').addEventListener('click', disolverCuadrilla);
   document.getElementById('form-nuevo-usuario').addEventListener('submit', crearUsuario);
   document.getElementById('form-donar-app').addEventListener('submit', donarDesdeApp);
 
@@ -161,6 +162,7 @@ function entrarAlApp(usuario) {
     agregarBotonNav(nav, 'Bodega', 'bodega');
     agregarBotonNav(nav, 'Stock por proyecto', 'stock-proyectos');
     agregarBotonNav(nav, 'Proyectos', 'proyectos');
+    agregarBotonNav(nav, 'Cuadrillas', 'cuadrillas');
     agregarBotonNav(nav, 'Donaciones', 'donaciones');
   } else if (rol === 'colaborador') {
     agregarBotonNav(nav, 'Bodega', 'bodega');
@@ -216,7 +218,7 @@ function mostrarPanel(idPanel, boton) {
   if (idPanel === 'bodega') { cargarStock(''); cargarProyectosParaAsignar(); }
   if (idPanel === 'stock-proyectos') cargarStockPorProyectos();
   if (idPanel === 'proyectos') cargarProyectos();
-  if (idPanel === 'cuadrillas') cargarCuadrillas();
+  if (idPanel === 'cuadrillas') { cargarCuadrillas(); poblarCreateJefesCuadrilla(); }
   if (idPanel === 'voluntarios') cargarVoluntarios();
   if (idPanel === 'donaciones') cargarDonaciones();
   if (idPanel === 'donar') { cargarMisDonaciones(); }
@@ -519,12 +521,14 @@ async function cargarCuadrillas() {
       return;
     }
 
-    let html = '<table><thead><tr><th>Nombre</th><th>Especialidad</th><th>Estado</th><th>Voluntarios</th><th></th></tr></thead><tbody>';
+    let html = '<table><thead><tr><th>Código</th><th>Nombre</th><th>Especialidad</th><th>Jefe</th><th>Estado</th><th>Voluntarios</th><th></th></tr></thead><tbody>';
     for (let i = 0; i < cuadrillas.length; i++) {
       const c = cuadrillas[i];
       const cantidadVoluntarios = c.voluntarios ? c.voluntarios.length : 0;
-      html += '<tr><td>' + c.nombre + '</td><td>' + c.especialidad + '</td>' +
-        '<td><span class="badge badge-mid">' + c.estado + '</span></td>' +
+      const jefeNombre = c.jefeCuadrilla ? (c.jefeCuadrilla.nombre + ' ' + c.jefeCuadrilla.apellido) : '—';
+      html += '<tr><td><strong>' + c.codigo + '</strong></td><td>' + c.nombre + '</td><td>' + c.especialidad.replace('_', ' ') + '</td>' +
+        '<td>' + jefeNombre + '</td>' +
+        '<td><span class="badge badge-mid">' + c.estado.replace(/_/g, ' ') + '</span></td>' +
         '<td>' + cantidadVoluntarios + '</td>' +
         '<td><button class="btn btn-ghost btn-sm" onclick="verDetalleCuadrilla(' + c.id + ')">Ver detalle</button></td></tr>';
     }
@@ -537,11 +541,16 @@ async function cargarCuadrillas() {
 
 async function crearCuadrilla(e) {
   e.preventDefault();
+  const codigo = document.getElementById('cu-codigo').value;
   const nombre = document.getElementById('cu-nombre').value;
   const especialidad = document.getElementById('cu-especialidad').value;
+  const jefeCuadrillaId = Number(document.getElementById('cu-jefe-id').value);
 
   try {
-    await api('/cuadrillas', { method: 'POST', body: { nombre: nombre, especialidad: especialidad } });
+    await api('/cuadrillas', {
+      method: 'POST',
+      body: { codigo: codigo, nombre: nombre, especialidad: especialidad, jefeCuadrillaId: jefeCuadrillaId },
+    });
     mostrarMensaje('msg-cuadrilla', 'Cuadrilla creada.', false);
     e.target.reset();
     cargarCuadrillas();
@@ -563,47 +572,87 @@ async function verDetalleCuadrilla(id) {
   try {
     const c = await api('/cuadrillas/' + id);
 
-    document.getElementById('detalle-cuadrilla-titulo').textContent = c.nombre;
+    document.getElementById('detalle-cuadrilla-titulo').textContent = c.codigo + ' — ' + c.nombre;
+    document.getElementById('ecu-codigo').value = c.codigo;
     document.getElementById('ecu-nombre').value = c.nombre;
     document.getElementById('ecu-especialidad').value = c.especialidad;
     document.getElementById('ecu-estado').value = c.estado;
+
+    await poblarSelectJefesCuadrilla(document.getElementById('ecu-jefe-id'), c.jefeCuadrillaId);
+
+    const esDisuelta = c.estado === 'Disuelta';
+    document.getElementById('btn-disolver-cuadrilla').style.display = esDisuelta ? 'none' : 'inline-block';
 
     const asignaciones = c.voluntarios || [];
     const contenedor = document.getElementById('tabla-voluntarios-cuadrilla');
     if (asignaciones.length === 0) {
       contenedor.innerHTML = '<div class="vacio">Todavía no hay voluntarios en esta cuadrilla.</div>';
     } else {
-      let html = '<table><thead><tr><th>Nombre</th><th>Email</th></tr></thead><tbody>';
+      const puedeRemover = !esDisuelta;
+      let html = '<table><thead><tr><th>Nombre</th><th>Email</th><th>Especialidad</th><th></th></tr></thead><tbody>';
       for (let i = 0; i < asignaciones.length; i++) {
-        const v = asignaciones[i].voluntario;
+        const cv = asignaciones[i];
+        const v = cv.voluntario;
         if (!v) continue;
-        html += '<tr><td>' + v.nombre + ' ' + v.apellido + '</td><td>' + v.email + '</td></tr>';
+        const removerBoton = puedeRemover
+          ? '<button class="btn btn-ghost btn-sm" onclick="removerVoluntarioDeCuadrilla(' + c.id + ', ' + v.id + ')">Quitar</button>'
+          : '—';
+        html += '<tr><td>' + v.nombre + ' ' + v.apellido + '</td><td>' + v.email + '</td>' +
+          '<td>' + (nombreDeEspecialidad(v.especialidad) || '—') + '</td><td>' + removerBoton + '</td></tr>';
       }
       html += '</tbody></table>';
       contenedor.innerHTML = html;
     }
 
-    await poblarSelectVoluntariosDisponibles(asignaciones);
+    await poblarSelectVoluntariosDisponibles(asignaciones, c.especialidad);
+
+    // Mostrar historial
+    const historial = c.historial || [];
+    const contenedorHistorial = document.getElementById('tabla-historial-cuadrilla');
+    if (historial.length === 0) {
+      contenedorHistorial.innerHTML = '<div class="vacio">Sin historial registrado.</div>';
+    } else {
+      let hhtml = '<table><thead><tr><th>Fecha</th><th>Acción</th><th>Descripción</th><th>Usuario</th></tr></thead><tbody>';
+      for (let i = 0; i < historial.length; i++) {
+        const h = historial[i];
+        hhtml += '<tr><td>' + new Date(h.registradoEn).toLocaleString('es-CL') + '</td>' +
+          '<td><span class="badge badge-mid">' + h.accion + '</span></td>' +
+          '<td>' + h.descripcion + '</td>' +
+          '<td>' + (h.usuario ? h.usuario.nombre : '—') + '</td></tr>';
+      }
+      hhtml += '</tbody></table>';
+      contenedorHistorial.innerHTML = hhtml;
+    }
   } catch (err) {
     mostrarMensaje('msg-detalle-cuadrilla', err.message, true);
   }
 }
 
-async function poblarSelectVoluntariosDisponibles(asignaciones) {
+// Mapa de especialidades de voluntario compatibles con cada especialidad de cuadrilla
+const MAPA_ESPECIALIDAD_VOLUNTARIO = {
+  fuerza_general: 'fuerza_general',
+  tecnico: 'tecnico',
+  logistica: 'jefe_cuadrilla',
+};
+
+async function poblarSelectVoluntariosDisponibles(asignaciones, especialidadCuadrilla) {
   const select = document.getElementById('agv-voluntario-id');
   select.innerHTML = '';
 
   try {
     const voluntarios = await api('/voluntarios');
     const idsAsignados = asignaciones.map(function (a) { return a.voluntarioId; });
+    const especialidadRequerida = MAPA_ESPECIALIDAD_VOLUNTARIO[especialidadCuadrilla];
 
     for (let i = 0; i < voluntarios.length; i++) {
       const v = voluntarios[i];
       if (v.estado !== 'Activo') continue;
       if (idsAsignados.indexOf(v.id) !== -1) continue;
+      // Filtrar por especialidad compatible (R2)
+      if (v.especialidad !== especialidadRequerida) continue;
       const opt = document.createElement('option');
       opt.value = v.id;
-      opt.textContent = v.nombre + ' ' + v.apellido;
+      opt.textContent = v.nombre + ' ' + v.apellido + ' (' + nombreDeEspecialidad(v.especialidad) + ')';
       select.appendChild(opt);
     }
   } catch (err) {
@@ -611,20 +660,88 @@ async function poblarSelectVoluntariosDisponibles(asignaciones) {
   }
 }
 
+async function poblarSelectJefesCuadrilla(select, seleccionadoId) {
+  select.innerHTML = '';
+  try {
+    const voluntarios = await api('/voluntarios');
+    for (let i = 0; i < voluntarios.length; i++) {
+      const v = voluntarios[i];
+      if (v.estado !== 'Activo') continue;
+      if (v.especialidad !== 'jefe_cuadrilla') continue;
+      const opt = document.createElement('option');
+      opt.value = v.id;
+      opt.textContent = v.nombre + ' ' + v.apellido + ' (' + v.email + ')';
+      if (seleccionadoId && v.id === seleccionadoId) opt.selected = true;
+      select.appendChild(opt);
+    }
+  } catch (err) {
+    // si no se pueden cargar los voluntarios, el select queda vacío
+  }
+}
+
+async function poblarCreateJefesCuadrilla() {
+  const select = document.getElementById('cu-jefe-id');
+  select.innerHTML = '';
+  try {
+    const voluntarios = await api('/voluntarios');
+    for (let i = 0; i < voluntarios.length; i++) {
+      const v = voluntarios[i];
+      if (v.estado !== 'Activo') continue;
+      if (v.especialidad !== 'jefe_cuadrilla') continue;
+      const opt = document.createElement('option');
+      opt.value = v.id;
+      opt.textContent = v.nombre + ' ' + v.apellido + ' (' + v.email + ')';
+      select.appendChild(opt);
+    }
+  } catch (err) {
+    // si no se pueden cargar los voluntarios, el select queda vacío
+  }
+}
+
+async function removerVoluntarioDeCuadrilla(cuadrillaId, voluntarioId) {
+  if (!confirm('¿Estás seguro de querer remover este voluntario de la cuadrilla?')) return;
+
+  try {
+    await api('/cuadrillas/' + cuadrillaId + '/voluntarios/' + voluntarioId, { method: 'DELETE' });
+    mostrarMensaje('msg-detalle-cuadrilla', 'Voluntario removido.', false);
+    cargarCuadrillas();
+    verDetalleCuadrilla(cuadrillaId);
+  } catch (err) {
+    mostrarMensaje('msg-detalle-cuadrilla', err.message, true);
+  }
+}
+
 async function editarCuadrilla(e) {
   e.preventDefault();
   if (!cuadrillaSeleccionadaId) return;
 
+  const body = {
+    codigo: document.getElementById('ecu-codigo').value,
+    nombre: document.getElementById('ecu-nombre').value,
+    especialidad: document.getElementById('ecu-especialidad').value,
+    estado: document.getElementById('ecu-estado').value,
+  };
+
+  const jefeId = document.getElementById('ecu-jefe-id').value;
+  if (jefeId) body.jefeCuadrillaId = Number(jefeId);
+
   try {
-    await api('/cuadrillas/' + cuadrillaSeleccionadaId, {
-      method: 'PUT',
-      body: {
-        nombre: document.getElementById('ecu-nombre').value,
-        especialidad: document.getElementById('ecu-especialidad').value,
-        estado: document.getElementById('ecu-estado').value,
-      },
-    });
+    await api('/cuadrillas/' + cuadrillaSeleccionadaId, { method: 'PUT', body: body });
     mostrarMensaje('msg-detalle-cuadrilla', 'Cuadrilla actualizada.', false);
+    cargarCuadrillas();
+    verDetalleCuadrilla(cuadrillaSeleccionadaId);
+  } catch (err) {
+    mostrarMensaje('msg-detalle-cuadrilla', err.message, true);
+  }
+}
+
+async function disolverCuadrilla() {
+  if (!cuadrillaSeleccionadaId) return;
+  if (!confirm('¿Estás seguro de disolver esta cuadrilla? Los integrantes quedarán liberados.')) return;
+
+  try {
+    await api('/cuadrillas/' + cuadrillaSeleccionadaId + '/disolver', { method: 'PATCH' });
+    mostrarMensaje('msg-detalle-cuadrilla', 'Cuadrilla disuelta.', false);
     cargarCuadrillas();
     verDetalleCuadrilla(cuadrillaSeleccionadaId);
   } catch (err) {

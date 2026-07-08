@@ -9,6 +9,7 @@ import { Voluntario } from '../entities/voluntario.entity.mjs';
 import { Donacion } from '../entities/donacion.entity.mjs';
 import { Cuadrilla } from '../entities/cuadrilla.entity.mjs';
 import { CuadrillaVoluntario } from '../entities/cuadrillaVoluntario.entity.mjs';
+import { HistorialCuadrilla } from '../entities/historialCuadrilla.entity.mjs';
 
 // DataSource de TypeORM con todas las entidades registradas.
 // synchronize: true crea/actualiza las tablas según las entidades (solo apto para desarrollo).
@@ -21,7 +22,7 @@ export const AppDataSource = new DataSource({
     database: DATABASE,
     synchronize: true,
     logging: false,
-    entities: [Usuario, Proyecto, Material, AsignacionMaterial, HistorialStock, Voluntario, Donacion, Cuadrilla, CuadrillaVoluntario],
+    entities: [Usuario, Proyecto, Material, AsignacionMaterial, HistorialStock, Voluntario, Donacion, Cuadrilla, CuadrillaVoluntario, HistorialCuadrilla],
 });
 
 export async function connectDb() {

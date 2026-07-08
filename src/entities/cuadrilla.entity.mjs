@@ -10,11 +10,16 @@ export const Cuadrilla = new EntitySchema({
             type: "int",
             generated: "increment",
         },
+        codigo: {
+            type: "varchar",
+            length: 50,
+            nullable: false,
+            unique: true,
+        },
         nombre: {
             type: "varchar",
             length: 200,
             nullable: false,
-            unique: true,
         },
         especialidad: {
             type: "enum",
@@ -24,11 +29,11 @@ export const Cuadrilla = new EntitySchema({
         estado: {
             type: "enum",
             enum: ["En_formacion", "Lista_para_asignacion", "Disuelta"],
-            default: "En_formacion",
+            default: "Lista_para_asignacion",
         },
         jefeCuadrillaId: {
             type: "int",
-            nullable: true,
+            nullable: false,
             name: "jefe_cuadrilla_id",
         },
         proyectoId: {
@@ -65,8 +70,17 @@ export const Cuadrilla = new EntitySchema({
             target: "CuadrillaVoluntario",
             inverseSide: "cuadrilla",
         },
+        historial: {
+            type: "one-to-many",
+            target: "HistorialCuadrilla",
+            inverseSide: "cuadrilla",
+        },
     },
     indices: [
+        {
+            columns: ["codigo"],
+            unique: true,
+        },
         {
             columns: ["especialidad"],
         },

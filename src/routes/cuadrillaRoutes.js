@@ -1,5 +1,3 @@
-// Rutas de cuadrillas. Lectura autenticada; gestión para admin,
-// coordinador de bodega y encargado de cuadrillas; eliminar solo admin.
 const router = require('express').Router();
 const { validationResult } = require('express-validator');
 const verificarToken = require('../middlewares/auth');
@@ -17,7 +15,9 @@ router.get('/', verificarToken, v.listarCuadrillas, check, ctrl.listarCuadrillas
 router.get('/:id', verificarToken, v.obtenerCuadrilla, check, ctrl.obtenerCuadrilla);
 router.post('/', verificarToken, requiereRol('admin', 'coordinador_logistica', 'encargado_cuadrillas'), v.crearCuadrilla, check, ctrl.crearCuadrilla);
 router.put('/:id', verificarToken, requiereRol('admin', 'coordinador_logistica', 'encargado_cuadrillas'), v.actualizarCuadrilla, check, ctrl.actualizarCuadrilla);
-router.delete('/:id', verificarToken, soloAdmin, v.eliminarCuadrilla, check, ctrl.eliminarCuadrilla);
+router.patch('/:id/disolver', verificarToken, requiereRol('admin', 'coordinador_logistica', 'encargado_cuadrillas'), ctrl.disolverCuadrilla);
+router.delete('/:id', verificarToken, soloAdmin, ctrl.eliminarCuadrilla);
 router.post('/:id/voluntarios', verificarToken, requiereRol('admin', 'coordinador_logistica', 'encargado_cuadrillas'), v.agregarVoluntario, check, ctrl.agregarVoluntario);
+router.delete('/:id/voluntarios/:voluntarioId', verificarToken, requiereRol('admin', 'coordinador_logistica', 'encargado_cuadrillas'), v.removerVoluntario, check, ctrl.removerVoluntario);
 
 module.exports = router;

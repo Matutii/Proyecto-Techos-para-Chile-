@@ -373,6 +373,10 @@
         <div id="msg-cuadrilla"></div>
         <form id="form-cuadrilla">
           <div class="form-field">
+            <label>Código de cuadrilla (ID único)</label>
+            <input type="text" id="cu-codigo" placeholder="Ej: CUAD-001" required>
+          </div>
+          <div class="form-field">
             <label>Nombre</label>
             <input type="text" id="cu-nombre" required>
           </div>
@@ -383,6 +387,10 @@
               <option value="tecnico">Técnico</option>
               <option value="logistica">Logística</option>
             </select>
+          </div>
+          <div class="form-field">
+            <label>Jefe de cuadrilla</label>
+            <select id="cu-jefe-id" required></select>
           </div>
           <button type="submit" class="btn btn-ember">Crear cuadrilla</button>
         </form>
@@ -396,6 +404,10 @@
 
         <form id="form-editar-cuadrilla" style="margin-bottom:20px;">
           <div class="form-field">
+            <label>Código</label>
+            <input type="text" id="ecu-codigo" required>
+          </div>
+          <div class="form-field">
             <label>Nombre</label>
             <input type="text" id="ecu-nombre" required>
           </div>
@@ -408,14 +420,18 @@
             </select>
           </div>
           <div class="form-field">
+            <label>Jefe de cuadrilla</label>
+            <select id="ecu-jefe-id"></select>
+          </div>
+          <div class="form-field">
             <label>Estado</label>
             <select id="ecu-estado">
-              <option value="En_formacion">En formación</option>
               <option value="Lista_para_asignacion">Lista para asignación</option>
               <option value="Disuelta">Disuelta</option>
             </select>
           </div>
           <button type="submit" class="btn btn-ember">Guardar cambios</button>
+          <button type="button" class="btn btn-ghost" id="btn-disolver-cuadrilla" style="margin-left:8px;">Disolver cuadrilla</button>
         </form>
 
         <h4 style="margin-bottom:10px;font-size:14px;">Voluntarios asignados</h4>
@@ -429,6 +445,9 @@
           </div>
           <button type="submit" class="btn btn-ember">Agregar a la cuadrilla</button>
         </form>
+
+        <h4 style="margin-bottom:10px;font-size:14px;">Historial</h4>
+        <div id="tabla-historial-cuadrilla"></div>
       </div>
     </section>
 
