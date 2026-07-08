@@ -690,9 +690,12 @@ async function donarDesdeApp(e) {
   e.preventDefault();
   const monto = document.getElementById('donapp-monto').value;
   const metodo = document.getElementById('donapp-metodo').value;
+  const esAnonimo = document.getElementById('donapp-anonimo').checked;
+  const body = { monto: Number(monto), metodoPago: metodo };
+  if (!esAnonimo) body.donanteNombre = Sesion.usuario().nombre;
 
   try {
-    await api('/donaciones', { method: 'POST', body: { monto: Number(monto), metodoPago: metodo } });
+    await api('/donaciones', { method: 'POST', body: body });
     mostrarMensaje('msg-donar-app', '¡Gracias por tu donación!', false);
     e.target.reset();
   } catch (err) {
