@@ -281,6 +281,11 @@ th {
   background-color: #dc3545;
 }
 
+.badge-yellow {
+  background-color: #ffc107;
+  color: #333;
+}
+
 .badge-mid {
   background-color: #0d6efd;
 }

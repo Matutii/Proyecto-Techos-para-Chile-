@@ -265,7 +265,7 @@ async function cargarStock(estado) {
       let colorBadge = 'badge-mid';
       if (m.estado === 'Disponible') colorBadge = 'badge-ok';
       if (m.estado === 'Agotado') colorBadge = 'badge-warn';
-      if (m.estado === 'Bajo_Stock') colorBadge = 'badge-warn';
+      if (m.estado === 'Bajo_Stock') colorBadge = 'badge-yellow';
 
       let acciones = '—';
       if (rol === 'colaborador') {
